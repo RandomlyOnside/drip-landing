@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1000" height="500" viewBox="0 0 1000 500" xmlns="http://www.w3.org/2000/svg">
+  <!-- Placeholder SVG for Local Drip logo -->
+  <!-- This should be replaced with the actual vector version of the logo -->
+  <rect width="1000" height="500" fill="#f3f4f6" stroke="#d1d5db" stroke-width="2"/>
+  <text x="500" y="250" text-anchor="middle" dominant-baseline="middle" 
+        font-family="Arial, sans-serif" font-size="48" fill="#374151">
+    Local Drip Logo (SVG)
+  </text>
+  <text x="500" y="300" text-anchor="middle" dominant-baseline="middle" 
+        font-family="Arial, sans-serif" font-size="16" fill="#6b7280">
+    Replace with actual vector logo
+  </text>
+</svg>

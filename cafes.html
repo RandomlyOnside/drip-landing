@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local Drip - Partner with Us</title>
+    <meta name="description" content="Keep your café thriving, without big-app fees. Join the neighborhood co-op and reach locals directly, on fair terms.">
+    
+    <!-- Preconnect to Firebase for performance -->
+    <link rel="preconnect" href="https://firestore.googleapis.com">
+    
+    <!-- Custom styles -->
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+</head>
+<body>
+    <!-- Skip link for accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <main id="main-content" style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem 1rem;">
+        <div style="max-width: 600px; width: 100%; text-align: center;">
+            <!-- Header section with business-focused messaging -->
+            <header style="margin-bottom: 3rem;">
+                <h1 class="hero-title" style="font-size: 3rem; margin-bottom: 1rem; line-height: 1.1;">
+                    Keep your café thriving, without big-app fees.
+                </h1>
+                <p class="hero-subtitle" style="font-size: 1.25rem; margin-bottom: 2rem; line-height: 1.4;">
+                    Join the neighborhood co-op. Reach locals directly, on fair terms.
+                </p>
+            </header>
+            
+            <!-- Signup form section -->
+            <section>
+                <form id="cafes-signup-form" style="max-width: 400px; margin: 0 auto;">
+                    <div style="margin-bottom: 1.5rem;">
+                        <label for="name" class="sr-only">Your name</label>
+                        <input 
+                            type="text" 
+                            id="name" 
+                            name="name" 
+                            placeholder="Your name"
+                            required
+                            style="width: 100%; padding: 1rem; border: 2px solid #E5DDD5; border-radius: 0.5rem; font-size: 1rem; background-color: white; color: var(--brand-text-primary); transition: border-color 0.2s ease;"
+                            aria-describedby="name-help"
+                        >
+                        <div id="name-help" class="sr-only">
+                            Enter your full name
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 1.5rem;">
+                        <label for="email" class="sr-only">Email address</label>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            name="email" 
+                            placeholder="Your email address"
+                            required
+                            style="width: 100%; padding: 1rem; border: 2px solid #E5DDD5; border-radius: 0.5rem; font-size: 1rem; background-color: white; color: var(--brand-text-primary); transition: border-color 0.2s ease;"
+                            aria-describedby="email-help"
+                        >
+                        <div id="email-help" class="sr-only">
+                            Enter your email address for partnership communications
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 1.5rem;">
+                        <label for="cafeName" class="sr-only">Café name</label>
+                        <input 
+                            type="text" 
+                            id="cafeName" 
+                            name="cafeName" 
+                            placeholder="Your café name"
+                            required
+                            style="width: 100%; padding: 1rem; border: 2px solid #E5DDD5; border-radius: 0.5rem; font-size: 1rem; background-color: white; color: var(--brand-text-primary); transition: border-color 0.2s ease;"
+                            aria-describedby="cafe-name-help"
+                        >
+                        <div id="cafe-name-help" class="sr-only">
+                            Enter the name of your café
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 1.5rem;">
+                        <label for="posSystem" class="sr-only">POS system (optional)</label>
+                        <input 
+                            type="text" 
+                            id="posSystem" 
+                            name="posSystem" 
+                            placeholder="POS system (optional)"
+                            style="width: 100%; padding: 1rem; border: 2px solid #E5DDD5; border-radius: 0.5rem; font-size: 1rem; background-color: white; color: var(--brand-text-primary); transition: border-color 0.2s ease;"
+                            aria-describedby="pos-system-help"
+                        >
+                        <div id="pos-system-help" class="sr-only">
+                            Optionally enter your current POS system (e.g., Square, Toast, Clover)
+                        </div>
+                    </div>
+                    
+                    <button 
+                        type="submit" 
+                        class="cta-button cta-button-cafe"
+                        style="width: 100%; font-size: 1.1rem; margin-bottom: 1rem;"
+                        aria-describedby="submit-help"
+                    >
+                        Join the Co-op
+                    </button>
+                    <div id="submit-help" class="sr-only">
+                        Click to sign up as a café partner with Local Drip
+                    </div>
+                </form>
+                
+                <!-- Success message (hidden by default) -->
+                <div id="success-message" style="display: none; background-color: var(--brand-success); color: white; padding: 1.5rem; border-radius: 0.5rem; margin-top: 1.5rem;">
+                    <h2 style="margin: 0 0 0.5rem 0; font-size: 1.25rem;">Welcome to Local Drip!</h2>
+                    <p style="margin: 0; font-size: 1rem;">We'll be in touch soon. Thanks for keeping coffee local.</p>
+                </div>
+                
+                <!-- Error message (hidden by default) -->
+                <div id="error-message" style="display: none; background-color: #D35400; color: white; padding: 1rem; border-radius: 0.5rem; margin-top: 1rem;">
+                    <p style="margin: 0; font-size: 0.9rem;" id="error-text"></p>
+                </div>
+                
+                <!-- Loading state (hidden by default) -->
+                <div id="loading-message" style="display: none; color: var(--brand-text-secondary); margin-top: 1rem;">
+                    <p style="margin: 0; font-size: 0.9rem;">Signing you up...</p>
+                </div>
+            </section>
+            
+            <!-- Back to home link -->
+            <footer style="margin-top: 3rem;">
+                <a href="/" style="color: var(--brand-text-secondary); text-decoration: none; font-size: 0.9rem; border-bottom: 1px solid transparent; transition: border-color 0.2s ease;">
+                    ← Back to Local Drip
+                </a>
+            </footer>
+        </div>
+    </main>
+    
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Load Firebase modules and make them globally available
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getFirestore, collection, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        
+        // Make Firebase modules globally available for cafes.js
+        window.firebaseModules = {
+            initializeApp,
+            getFirestore,
+            collection,
+            addDoc,
+            serverTimestamp
+        };
+    </script>
+    
+    <!-- Café signup page JavaScript -->
+    <script type="module" src="js/cafes.js"></script>
+</body>
+</html>
