@@ -17,8 +17,8 @@ export interface SignupDocument extends SignupFormData {
  */
 export async function saveSignupData(data: SignupFormData): Promise<string> {
   try {
-    // Check if email already exists
-    const isDuplicate = await checkDuplicateEmail(data.email);
+    // Check if email already exists for the same role
+    const isDuplicate = await checkDuplicateEmail(data.email, data.role);
     if (isDuplicate) {
       throw new Error('Email already registered');
     }
@@ -39,13 +39,18 @@ export async function saveSignupData(data: SignupFormData): Promise<string> {
 }
 
 /**
- * Check if an email already exists in the signups collection
+ * Check if an email already exists in the signups collection for a specific role
  * @param email - The email to check
- * @returns Promise that resolves to boolean indicating if email exists
+ * @param role - The role to check for ('local' or 'cafe')
+ * @returns Promise that resolves to boolean indicating if email exists for that role
  */
-export async function checkDuplicateEmail(email: string): Promise<boolean> {
+export async function checkDuplicateEmail(email: string, role: 'local' | 'cafe'): Promise<boolean> {
   try {
-    const q = query(collection(db, 'signups'), where('email', '==', email));
+    const q = query(
+      collection(db, 'signups'),
+      where('email', '==', email),
+      where('role', '==', role)
+    );
     const querySnapshot = await getDocs(q);
     return !querySnapshot.empty;
   } catch (error) {

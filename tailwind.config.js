@@ -19,6 +19,8 @@ module.exports = {
   			},
   			accent1: '#D35400',
   			accent2: '#7D9A6D',
+  			success: '#7D9A6D',
+  			error: '#D35400',
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {

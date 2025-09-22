@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { saveSignupData, type SignupFormData } from "@/lib/firestore"
 import { cn } from "@/lib/utils"
+import { getMessageClasses } from "@/lib/brand-colors"
 
 interface SignupModalProps {
   isOpen: boolean
@@ -38,7 +39,7 @@ export function SignupModal({ isOpen, onClose, role }: SignupModalProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!email.trim()) {
       setMessage({
         type: 'error',
@@ -57,27 +58,27 @@ export function SignupModal({ isOpen, onClose, role }: SignupModalProps) {
       }
 
       await saveSignupData(formData)
-      
+
       setMessage({
         type: 'success',
-        text: role === 'local' 
+        text: role === 'local'
           ? 'You\'re on the list! We\'ll notify you when Local Drip launches in Denver.'
           : 'Thanks for your interest! We\'ll be in touch about partnership opportunities.'
       })
-      
+
       // Clear form after successful submission
       setEmail("")
-      
+
       // Close modal after a brief delay to show success message
       setTimeout(() => {
         onClose()
       }, 2000)
-      
+
     } catch (error) {
       console.error('Signup error:', error)
-      
+
       let errorMessage = 'Something went wrong. Please try again.'
-      
+
       if (error instanceof Error) {
         if (error.message === 'Email already registered') {
           errorMessage = 'Déjà brew — that email\'s already signed up! YAY!'
@@ -85,7 +86,7 @@ export function SignupModal({ isOpen, onClose, role }: SignupModalProps) {
           errorMessage = error.message
         }
       }
-      
+
       setMessage({
         type: 'error',
         text: errorMessage
@@ -96,7 +97,7 @@ export function SignupModal({ isOpen, onClose, role }: SignupModalProps) {
   }
 
   const getButtonColor = () => {
-    return role === 'local' ? 'bg-accent1 hover:bg-accent1/90' : 'bg-accent2 hover:bg-accent2/90'
+    return 'bg-success hover:bg-success/90'
   }
 
   const getRoleDisplayName = () => {
@@ -105,7 +106,7 @@ export function SignupModal({ isOpen, onClose, role }: SignupModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent 
+      <DialogContent
         className="sm:max-w-[425px] w-[95vw] max-w-[95vw] sm:w-full bg-secondary border-primary/20 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
         aria-describedby="signup-description"
       >
@@ -114,17 +115,17 @@ export function SignupModal({ isOpen, onClose, role }: SignupModalProps) {
             {role === 'local' ? 'Get Early Access' : 'Partner with Local Drip'}
           </DialogTitle>
           <DialogDescription id="signup-description" className="text-primary/80 text-sm sm:text-base">
-            {role === 'local' 
+            {role === 'local'
               ? 'Be among the first to discover and order from Denver\'s best independent cafés.'
               : 'Join our network of local cafés and reach more customers without the hefty fees.'
             }
           </DialogDescription>
         </DialogHeader>
-        
+
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>
           <div className="space-y-2">
-            <Label 
-              htmlFor="email" 
+            <Label
+              htmlFor="email"
               className="text-primary font-medium text-sm sm:text-base"
             >
               Email Address <span className="text-red-600" aria-label="required">*</span>
@@ -151,9 +152,7 @@ export function SignupModal({ isOpen, onClose, role }: SignupModalProps) {
               aria-live="polite"
               className={cn(
                 "p-3 rounded-md text-sm font-medium",
-                message.type === 'success' 
-                  ? "bg-green-50 text-green-800 border border-green-200" 
-                  : "bg-red-50 text-red-800 border border-red-200"
+                getMessageClasses(message.type)
               )}
             >
               {message.text}
@@ -163,10 +162,9 @@ export function SignupModal({ isOpen, onClose, role }: SignupModalProps) {
           <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-2 pt-4">
             <Button
               type="button"
-              variant="outline"
               onClick={onClose}
               disabled={isLoading}
-              className="border-primary/20 text-primary hover:bg-primary/5 focus:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-secondary order-2 sm:order-1"
+              className="bg-error hover:bg-error/90 text-white font-medium focus:outline-none focus:ring-2 focus:ring-error focus:ring-offset-2 focus:ring-offset-secondary order-2 sm:order-1"
             >
               Cancel
             </Button>
@@ -176,7 +174,7 @@ export function SignupModal({ isOpen, onClose, role }: SignupModalProps) {
               className={cn(
                 "text-white font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-secondary order-1 sm:order-2",
                 getButtonColor(),
-                role === 'local' ? 'focus:ring-accent1' : 'focus:ring-accent2'
+                'focus:ring-success'
               )}
               aria-describedby="submit-button-description"
             >
@@ -185,12 +183,12 @@ export function SignupModal({ isOpen, onClose, role }: SignupModalProps) {
           </div>
           <div className="sr-only">
             <p id="submit-button-description">
-              {isLoading 
-                ? 'Please wait while we process your signup' 
-                : (role === 'local' 
-                    ? 'Click to get early access to Local Drip' 
-                    : 'Click to partner with Local Drip'
-                  )
+              {isLoading
+                ? 'Please wait while we process your signup'
+                : (role === 'local'
+                  ? 'Click to get early access to Local Drip'
+                  : 'Click to partner with Local Drip'
+                )
               }
             </p>
           </div>
