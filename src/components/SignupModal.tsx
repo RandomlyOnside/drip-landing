@@ -14,6 +14,7 @@ import { Label } from "@/components/ui/label"
 import { saveSignupData, type SignupFormData } from "@/lib/firestore"
 import { cn } from "@/lib/utils"
 import { getMessageClasses } from "@/lib/brand-colors"
+import { trackSignupAttempt, trackSignupSuccess } from "@/lib/analytics"
 
 interface SignupModalProps {
   isOpen: boolean
@@ -48,6 +49,9 @@ export function SignupModal({ isOpen, onClose, role }: SignupModalProps) {
       return
     }
 
+    // Track signup attempt
+    trackSignupAttempt(role);
+
     setIsLoading(true)
     setMessage(null)
 
@@ -58,6 +62,9 @@ export function SignupModal({ isOpen, onClose, role }: SignupModalProps) {
       }
 
       await saveSignupData(formData)
+
+      // Track successful signup conversion
+      trackSignupSuccess(role);
 
       setMessage({
         type: 'success',

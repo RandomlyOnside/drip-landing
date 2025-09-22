@@ -7,12 +7,23 @@ import SiteFooter from '@/components/SiteFooter';
 import { SignupModal } from '@/components/SignupModal';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/ui/Logo';
+import { trackButtonClick, trackPageView } from '@/lib/analytics';
+import { useScrollTracking } from '@/hooks/useScrollTracking';
 
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = React.useState(false)
   const [modalRole, setModalRole] = React.useState<'local' | 'cafe'>('local')
 
+  // Track scroll depth
+  useScrollTracking();
+
+  // Track page view on mount
+  React.useEffect(() => {
+    trackPageView('Home');
+  }, []);
+
   const openModal = (role: 'local' | 'cafe') => {
+    trackButtonClick(`${role}_signup_button`, 'hero');
     setModalRole(role)
     setIsModalOpen(true)
   }
@@ -131,7 +142,10 @@ export default function Home() {
               Every cup fuels your neighborhood. Order from nearby cafés, support baristas you know, and keep Denver thriving.
             </p>
             <Button
-              onClick={() => openModal('local')}
+              onClick={() => {
+                trackButtonClick('local_signup_button', 'locals_section');
+                openModal('local');
+              }}
               className="bg-accent1 hover:bg-accent1/90 focus:bg-accent1/90 text-white font-semibold px-6 sm:px-8 py-3 text-base sm:text-lg w-full sm:w-auto sm:min-w-[200px] max-w-sm sm:max-w-none mx-auto transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-accent1 focus:ring-offset-2 focus:ring-offset-secondary"
             >
               Get Early Access
@@ -156,7 +170,10 @@ export default function Home() {
               Reach more customers, boost repeat orders, and keep your café running smoothly — all without the hefty delivery app fees.
             </p>
             <Button
-              onClick={() => openModal('cafe')}
+              onClick={() => {
+                trackButtonClick('cafe_signup_button', 'cafes_section');
+                openModal('cafe');
+              }}
               className="bg-accent2 hover:bg-accent2/90 focus:bg-accent2/90 text-white font-semibold px-6 sm:px-8 py-3 text-base sm:text-lg w-full sm:w-auto sm:min-w-[200px] max-w-sm sm:max-w-none mx-auto transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-accent2 focus:ring-offset-2 focus:ring-offset-secondary"
             >
               Partner with Us

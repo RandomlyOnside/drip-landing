@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
+import GoogleAnalytics from '@/components/GoogleAnalytics'
 
 export const metadata: Metadata = {
   title: 'Local Drip - Neighborhood coffee, fair & easy',
@@ -25,9 +26,13 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
+  const adsId = process.env.NEXT_PUBLIC_GOOGLE_ADS_CONVERSION_ID;
+
   return (
     <html lang="en" className="scroll-smooth">
       <body className="font-sans bg-secondary text-primary antialiased min-h-screen">
+        {gaId && <GoogleAnalytics gaId={gaId} adsId={adsId} />}
         <div className="relative flex min-h-screen flex-col">
           <main className="flex-1">
             {children}
