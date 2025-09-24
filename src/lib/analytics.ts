@@ -22,7 +22,7 @@ export const trackEvent = (eventName: string, parameters?: Record<string, any>) 
 };
 
 // Custom tracking events for your app
-export const trackSignupAttempt = (role: 'local' | 'cafe') => {
+export const trackSignupAttempt = (role: 'local' | 'cafe' | 'waitlist') => {
   trackEvent('signup_attempt', {
     user_type: role,
     page_location: window.location.href,
@@ -35,7 +35,7 @@ export const trackSignupAttempt = (role: 'local' | 'cafe') => {
   });
 };
 
-export const trackSignupSuccess = (role: 'local' | 'cafe') => {
+export const trackSignupSuccess = (role: 'local' | 'cafe' | 'waitlist') => {
   trackEvent('signup_success', {
     user_type: role,
     page_location: window.location.href,
@@ -43,7 +43,9 @@ export const trackSignupSuccess = (role: 'local' | 'cafe') => {
   
   // Track conversion for Google Ads
   gtag('event', 'conversion', {
-    send_to: process.env.NEXT_PUBLIC_GOOGLE_ADS_CONVERSION_ID,
+    send_to: `${process.env.NEXT_PUBLIC_GOOGLE_ADS_CONVERSION_ID}/oVk1CN66vaoZEOWrjPcD`,
+    value: 1.0,
+    currency: 'USD',
     user_type: role,
   });
   
@@ -87,5 +89,26 @@ export const trackScrollDepth = (depth: number) => {
   
   gtag('event', 'scroll', {
     scroll_depth: depth,
+  });
+};
+
+export const trackEmailInputFocus = (section: string) => {
+  trackEvent('email_input_focus', {
+    section: section,
+    page_location: window.location.href,
+  });
+  
+  gtag('event', 'form_engagement', {
+    engagement_type: 'email_focus',
+    section: section,
+  });
+};
+
+// Track page view conversion (for specific high-value pages)
+export const trackPageViewConversion = () => {
+  gtag('event', 'conversion', {
+    send_to: `${process.env.NEXT_PUBLIC_GOOGLE_ADS_CONVERSION_ID}/oVk1CN66vaoZEOWrjPcD`,
+    value: 1.0,
+    currency: 'USD'
   });
 };

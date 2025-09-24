@@ -4,15 +4,19 @@ import * as React from "react"
 import Image from 'next/image'
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
-import { SignupModal } from '@/components/SignupModal';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Logo } from '@/components/ui/Logo';
-import { trackButtonClick, trackPageView } from '@/lib/analytics';
+import { trackButtonClick, trackPageView, trackSignupAttempt, trackSignupSuccess, trackEmailInputFocus } from '@/lib/analytics';
 import { useScrollTracking } from '@/hooks/useScrollTracking';
+import { submitWaitlistSignup } from '@/lib/signupService';
 
 export default function Home() {
-  const [isModalOpen, setIsModalOpen] = React.useState(false)
-  const [modalRole, setModalRole] = React.useState<'local' | 'cafe'>('local')
+  const [email, setEmail] = React.useState('')
+  const [isSubmitting, setIsSubmitting] = React.useState(false)
+  const [isSubmitted, setIsSubmitted] = React.useState(false)
+  const [isDejaBrew, setIsDejaBrew] = React.useState(false)
+  const [error, setError] = React.useState('')
 
   // Track scroll depth
   useScrollTracking();
@@ -22,14 +26,57 @@ export default function Home() {
     trackPageView('Home');
   }, []);
 
-  const openModal = (role: 'local' | 'cafe') => {
-    trackButtonClick(`${role}_signup_button`, 'hero');
-    setModalRole(role)
-    setIsModalOpen(true)
-  }
+  const handleWaitlistSignup = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!email || isSubmitting) return
 
-  const closeModal = () => {
-    setIsModalOpen(false)
+    setIsSubmitting(true)
+    setError('')
+    trackSignupAttempt('waitlist')
+    trackButtonClick('waitlist_signup_button', 'hero')
+
+    try {
+      const result = await submitWaitlistSignup(email)
+
+      if (result.success) {
+        trackSignupSuccess('waitlist')
+        setIsSubmitted(true)
+        setEmail('')
+        console.log('Waitlist signup successful:', result.id)
+      } else {
+        // Handle "Déjà brew" message specially
+        if (result.error === 'Déjà brew — that email\'s already signed up! YAY!') {
+          setIsDejaBrew(true)
+          setEmail('')
+        } else {
+          setError(result.error || 'Something went wrong. Please try again.')
+        }
+        console.error('Signup failed:', result.error)
+      }
+    } catch (error: any) {
+      console.error('Signup error:', error)
+
+      // Enhanced error handling (matching existing pattern)
+      let errorMessage = error.message || 'Something went wrong. Please try again.';
+
+      if (error.message === 'Email already registered') {
+        setIsDejaBrew(true)
+        setEmail('')
+        return // Don't set error, just show déjà brew state
+      } else if (error.code === 'permission-denied') {
+        errorMessage = 'Access denied. Please try again later.';
+      } else if (error.code === 'unavailable') {
+        errorMessage = 'Service temporarily unavailable. Please try again.';
+      } else if (error.message && error.message.includes('network')) {
+        errorMessage = 'Network error. Please check your connection and try again.';
+      } else if (error.message && (error.message.includes('Firebase') || error.message.includes('Firestore'))) {
+        errorMessage = 'Service error. Please try again later.';
+      }
+
+      setError(errorMessage)
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -60,30 +107,70 @@ export default function Home() {
               id="hero-heading"
               className="text-primary text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4 sm:mb-6 leading-tight"
             >
-              Denver cafés. Zero lines. All local.
+              Denver&apos;s Best Cafés. <br /> One App.
             </h1>
             <p className="text-primary/80 text-base sm:text-lg md:text-xl lg:text-2xl mb-8 sm:mb-10 lg:mb-12 max-w-2xl mx-auto leading-relaxed">
-              One simple app to discover, order, and support Denver’s independent coffee shops.
+              Be the first to discover, order, and support Denver&apos;s best cafés — all in one place.
             </p>
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center max-w-md sm:max-w-none mx-auto">
-              <Button
-                onClick={() => openModal('local')}
-                className="bg-accent1 hover:bg-accent1/90 focus:bg-accent1/90 text-white font-semibold px-6 sm:px-8 py-3 text-base sm:text-lg w-full sm:w-auto sm:min-w-[200px] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-accent1 focus:ring-offset-2 focus:ring-offset-secondary"
-                aria-describedby="local-signup-description"
-              >
-                Start Supporting Local
-              </Button>
-              <Button
-                onClick={() => openModal('cafe')}
-                className="bg-accent2 hover:bg-accent2/90 focus:bg-accent2/90 text-white font-semibold px-6 sm:px-8 py-3 text-base sm:text-lg w-full sm:w-auto sm:min-w-[200px] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-accent2 focus:ring-offset-2 focus:ring-offset-secondary"
-                aria-describedby="cafe-signup-description"
-              >
-                Partner With Local Drip
-              </Button>
-            </div>
-            <div className="sr-only">
-              <p id="local-signup-description">Start supporting local coffee shops and discover neighborhood cafés</p>
-              <p id="cafe-signup-description">Partner with Local Drip as a café owner to connect with local coffee lovers</p>
+            {/* Waitlist Signup Form */}
+            <div className="max-w-md mx-auto">
+              <p className="text-primary/60 text-sm text-center mb-4">
+                Be the first to know when we launch in Denver
+              </p>
+              <form onSubmit={handleWaitlistSignup} className="space-y-4">
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Input
+                    type="email"
+                    placeholder="Enter your email"
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value)
+                      if (error) setError('')
+                      if (isSubmitted) setIsSubmitted(false)
+                      if (isDejaBrew) setIsDejaBrew(false)
+                    }}
+                    onFocus={() => trackEmailInputFocus('hero')}
+                    required
+                    className="flex-1 px-4 py-3 text-base border-2 border-primary/20 rounded-lg focus:border-accent1 focus:outline-none focus:ring-2 focus:ring-accent1/20 bg-white/90"
+                    aria-label="Email address for waitlist signup"
+                  />
+                  <Button
+                    type="submit"
+                    disabled={!email || isSubmitting}
+                    className="bg-accent1 hover:bg-accent1/90 focus:bg-accent1/90 disabled:bg-accent1/50 text-white font-semibold px-6 py-3 text-base sm:text-lg whitespace-nowrap transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-accent1 focus:ring-offset-2 focus:ring-offset-secondary"
+                  >
+                    {isSubmitting ? 'Joining...' : 'Join the Waitlist'}
+                  </Button>
+                </div>
+
+                {/* Success Message */}
+                {isSubmitted && (
+                  <div className="text-center p-6 bg-accent2/10 rounded-lg border border-accent2/20">
+                    <div className="text-accent2 text-2xl mb-2">✓</div>
+                    <h3 className="text-primary font-semibold text-lg mb-2">You&apos;re on the list!</h3>
+                    <p className="text-primary/80">We&apos;ll notify you when LocalDrip launches in Denver.</p>
+                  </div>
+                )}
+
+                {/* Déjà Brew Message */}
+                {isDejaBrew && (
+                  <div className="text-center p-6 bg-accent2/10 rounded-lg border border-accent2/20">
+                    <div className="text-accent2 text-2xl mb-2">☕</div>
+                    <h3 className="text-primary font-semibold text-lg mb-2">Déjà brew — that email&apos;s already signed up! YAY!</h3>
+                    <p className="text-primary/80">You&apos;re all set for when LocalDrip launches in Denver.</p>
+                  </div>
+                )}
+
+                {/* Error Message */}
+                {error && (
+                  <div className="text-center p-6 rounded-lg border text-red-600 bg-red-50 border-red-200">
+                    <div className="font-semibold text-lg">
+                      {error}
+                    </div>
+                  </div>
+                )}
+
+              </form>
             </div>
           </div>
         </section>
@@ -99,14 +186,20 @@ export default function Home() {
               id="story-heading"
               className="text-primary text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-6 sm:mb-8 leading-tight"
             >
-              Every Cup Stays Local.
+              Why can&apos;t supporting local be simple?
             </h2>
-            <div className="text-primary/90 text-base sm:text-lg md:text-xl max-w-2xl mx-auto mb-8 sm:mb-10 lg:mb-12 space-y-4 sm:space-y-6">
+            <div className="text-primary/90 text-base sm:text-lg md:text-xl max-w-3xl mx-auto mb-8 sm:mb-10 lg:mb-12 space-y-4 sm:space-y-6">
               <p className="leading-relaxed">
-                Local cafés are the heartbeat of our neighborhoods. But while big chains pour resources into apps and reward programs that lock customers into their ecosystem, independents are left struggling to keep up.
+                For years, I asked myself: why can&apos;t I easily get a custom cup of coffee from a local café, without defaulting back to the chains? Every time life got busy, I fell into the same trap — the convenience of the big apps.
               </p>
               <p className="leading-relaxed">
-                We started LocalDrip because we believe great coffee should strengthen local culture — and keep local dollars local. With one simple app, we make it just as easy to order from your neighborhood café as it is from the biggest chains — and every purchase helps your community thrive.
+                Big chains pour money into apps and reward programs that lock customers into their ecosystems. Independents? They get left behind. And the impact is huge: <span className="font-semibold text-accent1 bg-accent1/10 px-2 py-1 rounded">every $1 spent locally creates about $1.40 for your community, while that same dollar at a chain drains about $0.60 away</span>.
+              </p>
+              <p className="leading-relaxed">
+                So why isn&apos;t it easier? Why can&apos;t I order ahead from local shops — all of them, in one place? Some days I want the pumpkin bread from the café down the block, other days it&apos;s the cinnamon roll from a spot across the neighborhood. Supporting local shouldn&apos;t mean sacrificing convenience.
+              </p>
+              <p className="leading-relaxed">
+                That&apos;s why I built LocalDrip. One app for all your local cafés. Your custom drinks, your favorite spots — without the lock-in, without the price gouging. Just a fair, sustainable way to keep your daily coffee dollars where they belong: in your community.
               </p>
             </div>
             {/* Support Local Image */}
@@ -125,72 +218,11 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Locals Section */}
-        <section
-          id="locals"
-          className="bg-secondary flex items-center justify-center px-4 sm:px-6 lg:px-8 py-24 sm:py-32 lg:py-40 scroll-mt-20"
-          aria-labelledby="locals-heading"
-        >
-          <div className="text-center max-w-4xl mx-auto">
-            <h2
-              id="locals-heading"
-              className="text-primary text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6 leading-tight"
-            >
-              For Locals
-            </h2>
-            <p className="text-primary/85 text-base sm:text-lg md:text-xl mb-6 sm:mb-8 max-w-2xl mx-auto leading-relaxed">
-              Every cup fuels your neighborhood. Order from nearby cafés, support baristas you know, and keep Denver thriving.
-            </p>
-            <Button
-              onClick={() => {
-                trackButtonClick('local_signup_button', 'locals_section');
-                openModal('local');
-              }}
-              className="bg-accent1 hover:bg-accent1/90 focus:bg-accent1/90 text-white font-semibold px-6 sm:px-8 py-3 text-base sm:text-lg w-full sm:w-auto sm:min-w-[200px] max-w-sm sm:max-w-none mx-auto transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-accent1 focus:ring-offset-2 focus:ring-offset-secondary"
-            >
-              Get Early Access
-            </Button>
-          </div>
-        </section>
-
-        {/* Cafés Section */}
-        <section
-          id="cafes"
-          className="bg-secondary flex items-center justify-center px-4 sm:px-6 lg:px-8 py-24 sm:py-32 lg:py-40 scroll-mt-20"
-          aria-labelledby="cafes-heading"
-        >
-          <div className="text-center max-w-4xl mx-auto">
-            <h2
-              id="cafes-heading"
-              className="text-primary text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6 leading-tight"
-            >
-              For Cafés
-            </h2>
-            <p className="text-primary/85 text-base sm:text-lg md:text-xl mb-6 sm:mb-8 max-w-2xl mx-auto leading-relaxed">
-              Reach more customers, boost repeat orders, and keep your café running smoothly — all without the hefty delivery app fees.
-            </p>
-            <Button
-              onClick={() => {
-                trackButtonClick('cafe_signup_button', 'cafes_section');
-                openModal('cafe');
-              }}
-              className="bg-accent2 hover:bg-accent2/90 focus:bg-accent2/90 text-white font-semibold px-6 sm:px-8 py-3 text-base sm:text-lg w-full sm:w-auto sm:min-w-[200px] max-w-sm sm:max-w-none mx-auto transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-accent2 focus:ring-offset-2 focus:ring-offset-secondary"
-            >
-              Partner with Us
-            </Button>
-          </div>
-        </section>
       </main>
 
       {/* Footer */}
       <SiteFooter />
 
-      {/* Signup Modal */}
-      <SignupModal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        role={modalRole}
-      />
     </>
   )
 }

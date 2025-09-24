@@ -44,8 +44,8 @@ NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=G-FPP97MX41R
 # Google Analytics 4 - GET THIS FROM GA4
 NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
 
-# Google Ads - GET THIS FROM GOOGLE ADS
-NEXT_PUBLIC_GOOGLE_ADS_CONVERSION_ID=AW-XXXXXXXXXX
+# Google Ads - ALREADY CONFIGURED
+NEXT_PUBLIC_GOOGLE_ADS_CONVERSION_ID=AW-1055069669
 ```
 
 ### 2. Set Up Google Analytics 4
@@ -55,12 +55,16 @@ NEXT_PUBLIC_GOOGLE_ADS_CONVERSION_ID=AW-XXXXXXXXXX
 3. Get your Measurement ID (starts with G-)
 4. Add it to your `.env.local` file
 
-### 3. Set Up Google Ads (Optional)
+### 3. Google Ads Conversion Tracking (Already Set Up!)
 
-1. Go to [Google Ads](https://ads.google.com)
-2. Create a conversion action for "Sign Up"
-3. Get your Conversion ID (starts with AW-)
-4. Add it to your `.env.local` file
+✅ **Conversion ID**: AW-1055069669  
+✅ **Conversion Label**: oVk1CN66vaoZEOWrjPcD  
+✅ **Tracking**: Signup completions with $1.00 USD value
+
+Your Google Ads conversion tracking is already configured and will track:
+- Successful signups (both local users and café partners)
+- Page view conversions for high-value actions
+- Attribution back to your Google Ads campaigns
 
 ### 4. Enable Firebase Analytics
 
