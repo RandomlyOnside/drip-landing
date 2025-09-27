@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import GoogleAnalytics from '@/components/GoogleAnalytics'
+import { ToastProvider } from '@/lib/toast'
 
 export const metadata: Metadata = {
   title: 'Local Drip - Neighborhood coffee, fair & easy',
@@ -33,11 +34,13 @@ export default function RootLayout({
     <html lang="en" className="scroll-smooth">
       <body className="font-sans bg-secondary text-primary antialiased min-h-screen">
         {gaId && <GoogleAnalytics gaId={gaId} adsId={adsId} />}
-        <div className="relative flex min-h-screen flex-col">
-          <main className="flex-1">
-            {children}
-          </main>
-        </div>
+        <ToastProvider>
+          <div className="relative flex min-h-screen flex-col">
+            <main className="flex-1">
+              {children}
+            </main>
+          </div>
+        </ToastProvider>
       </body>
     </html>
   )

@@ -4,3 +4,5 @@ export { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 export { Input } from './input';
 export { Label } from './label';
 export { Separator } from './separator';
+export { Toast } from './toast';
+export { ToastContainer } from './toast-container';
