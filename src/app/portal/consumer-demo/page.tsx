@@ -1,44 +1,62 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { Layout } from '@/components/consumer/Layout';
 
 export default function ConsumerDemoPage() {
-  const router = useRouter();
-
-  const handleBackToSignIn = () => {
-    router.push('/portal/signin');
-  };
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8">
-      <div className="max-w-md mx-auto px-4 sm:px-6 lg:px-8">
-        {/* LocalDrip Branding */}
+    <Layout>
+      <div className="max-w-4xl mx-auto">
+        {/* Welcome Section */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">LocalDrip</h1>
-          <p className="text-lg text-gray-600">Consumer Demo</p>
-        </div>
-
-        {/* Main Content */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4 text-center">
-            Consumer Demo
-          </h2>
-          
-          <p className="text-gray-600 text-center mb-6">
-            This is a placeholder for the consumer demo experience.
+          <h1 className="text-3xl font-bold text-primary mb-4">
+            Welcome to Consumer Portal
+          </h1>
+          <p className="text-lg text-primary/80">
+            Your gateway to managing orders and account information
           </p>
         </div>
 
-        {/* Back Navigation */}
-        <div className="text-center">
-          <button
-            onClick={handleBackToSignIn}
-            className="bg-gray-600 hover:bg-gray-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200"
-          >
-            ← Back to Sign In
-          </button>
+        {/* Quick Actions Grid */}
+        <div className="grid md:grid-cols-3 gap-6 mb-8">
+          <div className="bg-white border border-primary/20 rounded-lg p-6 text-center hover:shadow-md hover:border-accent2/40 transition-all">
+            <div className="text-4xl mb-4">🏠</div>
+            <h3 className="text-lg font-semibold mb-2 text-primary">Home</h3>
+            <p className="text-primary/70 text-sm">
+              Access your dashboard and overview
+            </p>
+          </div>
+
+          <div className="bg-white border border-primary/20 rounded-lg p-6 text-center hover:shadow-md hover:border-accent1/40 transition-all">
+            <div className="text-4xl mb-4">📦</div>
+            <h3 className="text-lg font-semibold mb-2 text-primary">Orders</h3>
+            <p className="text-primary/70 text-sm">
+              View and manage your orders
+            </p>
+          </div>
+
+          <div className="bg-white border border-primary/20 rounded-lg p-6 text-center hover:shadow-md hover:border-accent2/40 transition-all">
+            <div className="text-4xl mb-4">👤</div>
+            <h3 className="text-lg font-semibold mb-2 text-primary">Profile</h3>
+            <p className="text-primary/70 text-sm">
+              Update your account settings
+            </p>
+          </div>
+        </div>
+
+        {/* Getting Started */}
+        <div className="bg-primary/5 border border-primary/10 rounded-lg p-6">
+          <h2 className="text-xl font-semibold mb-4 text-primary">Getting Started</h2>
+          <p className="text-primary/80 mb-4">
+            Use the navigation menu above to explore different sections of the consumer portal.
+          </p>
+          <div className="text-sm text-primary/70">
+            <p>• <strong className="text-primary">Home:</strong> View your dashboard and recent activity</p>
+            <p>• <strong className="text-primary">Orders:</strong> Track and manage your orders</p>
+            <p>• <strong className="text-primary">Profile:</strong> Update your personal information and preferences</p>
+          </div>
         </div>
       </div>
-    </div>
+    </Layout>
   );
 }

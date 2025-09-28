@@ -9,6 +9,12 @@ export const metadata: Metadata = {
   keywords: 'local coffee, neighborhood cafés, coffee community, fair trade coffee',
   authors: [{ name: 'Local Drip' }],
   robots: 'index, follow',
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Consumer Portal',
+  },
   openGraph: {
     title: 'Local Drip - Neighborhood coffee, fair & easy',
     description: 'Connecting local coffee enthusiasts with neighborhood cafés.',
@@ -20,6 +26,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
+  themeColor: '#000000',
 }
 
 export default function RootLayout({
@@ -32,6 +39,13 @@ export default function RootLayout({
 
   return (
     <html lang="en" className="scroll-smooth">
+      <head>
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="Consumer Portal" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <link rel="apple-touch-icon" href="/images/icon-192.png" />
+      </head>
       <body className="font-sans bg-secondary text-primary antialiased min-h-screen">
         {gaId && <GoogleAnalytics gaId={gaId} adsId={adsId} />}
         <ToastProvider>
@@ -41,6 +55,23 @@ export default function RootLayout({
             </main>
           </div>
         </ToastProvider>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function() {
+                  navigator.serviceWorker.register('/sw.js')
+                    .then(function(registration) {
+                      console.log('SW registered: ', registration);
+                    })
+                    .catch(function(registrationError) {
+                      console.log('SW registration failed: ', registrationError);
+                    });
+                });
+              }
+            `,
+          }}
+        />
       </body>
     </html>
   )
