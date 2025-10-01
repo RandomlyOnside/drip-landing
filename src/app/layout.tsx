@@ -52,9 +52,13 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="LocalDrip" />
         <meta name="mobile-web-app-capable" content="yes" />
-        <link rel="apple-touch-icon" href="/images/ld-color-drip.svg" />
+        <meta name="application-name" content="LocalDrip" />
+        <meta name="msapplication-TileColor" content="#d35400" />
+        <meta name="msapplication-TileImage" content="/images/icon-192.png" />
+        <link rel="apple-touch-icon" href="/images/icon-192.png" />
+        <link rel="icon" href="/images/icon-192.png" type="image/png" />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-        <link rel="shortcut icon" href="/images/ld-color-drip.svg" />
+        <link rel="shortcut icon" href="/images/icon-192.png" />
       </head>
       <body className="font-sans bg-secondary text-primary antialiased min-h-screen">
         {gaId && <GoogleAnalytics gaId={gaId} adsId={adsId} />}
@@ -68,24 +72,71 @@ export default function RootLayout({
         <script
           dangerouslySetInnerHTML={{
             __html: `
+              // Enhanced service worker registration with Android compatibility
               if ('serviceWorker' in navigator) {
                 window.addEventListener('load', function() {
-                  navigator.serviceWorker.register('/sw.js')
+                  navigator.serviceWorker.register('/sw.js', {
+                    scope: '/portal/consumer-demo/'
+                  })
                     .then(function(registration) {
-                      console.log('SW registered: ', registration);
+                      console.log('SW registered successfully:', registration.scope);
+                      
+                      // Handle updates
+                      registration.addEventListener('updatefound', () => {
+                        const newWorker = registration.installing;
+                        if (newWorker) {
+                          newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                              console.log('New service worker available');
+                            }
+                          });
+                        }
+                      });
+                      
+                      // Update service worker if available
+                      if (registration.waiting) {
+                        registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+                      }
                     })
                     .catch(function(registrationError) {
-                      console.log('SW registration failed: ', registrationError);
+                      console.error('SW registration failed:', registrationError);
                     });
                 });
               }
               
-              // PWA install prompt handling
+              // Enhanced PWA install prompt handling for Android
               let deferredPrompt;
+              let installPromptShown = false;
+              
               window.addEventListener('beforeinstallprompt', (e) => {
-                console.log('PWA install prompt available');
+                console.log('PWA install prompt available on Android');
+                e.preventDefault();
                 deferredPrompt = e;
+                window.deferredPrompt = e;
+                
+                // Show custom install UI or trigger immediately for testing
+                console.log('Install prompt ready - can be triggered manually');
               });
+              
+              // Handle app installed event
+              window.addEventListener('appinstalled', (e) => {
+                console.log('PWA was installed successfully');
+                deferredPrompt = null;
+                window.deferredPrompt = null;
+              });
+              
+              // Add global function to trigger install (for debugging)
+              window.triggerInstall = function() {
+                if (deferredPrompt) {
+                  deferredPrompt.prompt();
+                  deferredPrompt.userChoice.then((choiceResult) => {
+                    console.log('User choice:', choiceResult.outcome);
+                    deferredPrompt = null;
+                  });
+                } else {
+                  console.log('No install prompt available');
+                }
+              };
             `,
           }}
         />

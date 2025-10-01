@@ -21,11 +21,12 @@ export function usePWA(): PWAInfo {
 
   useEffect(() => {
     const detectPWA = () => {
-      // Check if running in standalone mode (PWA installed)
+          // Check if running in standalone mode (PWA installed)
       const isStandalone = 
         window.matchMedia('(display-mode: standalone)').matches ||
         (window.navigator as any).standalone === true || // iOS Safari
-        document.referrer.includes('android-app://');
+        document.referrer.includes('android-app://') ||
+        window.matchMedia('(display-mode: minimal-ui)').matches;
 
       // Detect display mode
       let displayMode: PWAInfo['displayMode'] = 'browser';

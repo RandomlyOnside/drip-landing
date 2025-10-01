@@ -4,6 +4,7 @@ import { Layout, QuickActions } from '@/components/consumer';
 import { MockDataService } from '@/lib/mockDataService';
 import { PWADetector } from '@/components/PWADetector';
 import { usePWAConditional } from '@/components/PWADetector';
+import { InstallButton } from '@/components/InstallButton';
 import { useRouter } from 'next/navigation';
 export default function ConsumerDemoPage() {
   const user = MockDataService.getMockConsumerUser();
@@ -36,7 +37,10 @@ export default function ConsumerDemoPage() {
               <p className="text-sm text-primary-60">Using LocalDrip App</p>
             )}
             {renderIfBrowser(
-              <p className="text-sm text-primary-60"></p>
+              <div className="flex items-center gap-3">
+                <p className="text-sm text-primary-60">Try the app experience</p>
+                <InstallButton />
+              </div>
             )}
           </div>
         </div>
