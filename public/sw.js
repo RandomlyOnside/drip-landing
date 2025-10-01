@@ -13,7 +13,19 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        return cache.addAll(urlsToCache);
+        // Cache each URL individually to handle failures gracefully
+        return Promise.allSettled(
+          urlsToCache.map(url => 
+            fetch(url).then(response => {
+              if (response.ok) {
+                return cache.put(url, response);
+              }
+              console.warn(`Failed to cache ${url}: ${response.status}`);
+            }).catch(error => {
+              console.warn(`Failed to fetch ${url}:`, error);
+            })
+          )
+        );
       })
   );
 });

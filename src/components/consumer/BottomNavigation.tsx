@@ -50,6 +50,7 @@ export function BottomNavigation() {
   const [showInstallButton, setShowInstallButton] = useState(false);
   const [showBubble, setShowBubble] = useState(false);
   const [bubbleShown, setBubbleShown] = useState(false);
+  const [isBouncing, setIsBouncing] = useState(false);
 
   useEffect(() => {
     const handleBeforeInstallPrompt = (e: Event) => {
@@ -84,11 +85,17 @@ export function BottomNavigation() {
         const timer = setTimeout(() => {
           setShowBubble(true);
           setBubbleShown(true);
+          setIsBouncing(true);
 
-          // Auto-hide bubble after 5 seconds
+          // Stop bouncing after 10 seconds, settle for 10 more
+          setTimeout(() => {
+            setIsBouncing(false);
+          }, 10000);
+
+          // Auto-hide bubble after 20 seconds total (10 bounce + 10 settle)
           setTimeout(() => {
             setShowBubble(false);
-          }, 5000);
+          }, 20000);
         }, 2000); // Show after 2 seconds
 
         return () => clearTimeout(timer);
@@ -205,7 +212,7 @@ export function BottomNavigation() {
                 {/* Install Bubble Tooltip */}
                 {showBubble && (
                   <div className="absolute bottom-full right-0 mb-2 z-60">
-                    <div className="bg-accent1 text-white px-5 py-3 rounded-lg shadow-lg w-[240px] text-center relative animate-bounce">
+                    <div className={`bg-accent1 text-white px-5 py-3 rounded-lg shadow-lg w-[240px] text-center relative ${isBouncing ? 'animate-bounce' : ''}`}>
                       <button
                         onClick={handleBubbleDismiss}
                         className="absolute -top-1 -right-1 w-5 h-5 bg-white text-accent1 rounded-full flex items-center justify-center text-xs font-bold hover:bg-gray-100"

@@ -19,12 +19,12 @@ export default function ConsumerDemoPage() {
     <Layout>
       <div className="max-w-4xl mx-auto">
 
-        
+
         {/* Welcome Section with Logo */}
         <div className="mb-4 flex items-center gap-4">
-          <img 
-            src="/images/ld-color-drip.svg" 
-            alt="Local Drip Logo" 
+          <img
+            src="/images/ld-color-drip.svg"
+            alt="Local Drip Logo"
             className="w-10 h-10 md:w-12 md:h-12"
           />
           <div className="flex-1">
@@ -36,7 +36,7 @@ export default function ConsumerDemoPage() {
               <p className="text-sm text-primary-60">Using LocalDrip App</p>
             )}
             {renderIfBrowser(
-              <p className="text-sm text-primary-60">Using LocalDrip Web</p>
+              <p className="text-sm text-primary-60"></p>
             )}
           </div>
         </div>
@@ -48,7 +48,7 @@ export default function ConsumerDemoPage() {
         {/* Recent Orders Section */}
         <div className="mb-4">
           <h2 className="text-lg font-semibold text-primary mb-3">Recent Orders</h2>
-          
+
           {/* Recent Orders - 3 items in a row */}
           <div className="grid grid-cols-3 gap-2 mb-4">
             {MockDataService.getMockFrequentItems().slice(0, 3).map((item) => (
@@ -60,10 +60,10 @@ export default function ConsumerDemoPage() {
                   </div>
                   <p className="text-xs text-primary/70 truncate">{item.cafe}</p>
                 </div>
-                
+
                 {/* Item name */}
                 <h3 className="text-xs font-semibold text-primary truncate mb-1.5">{item.name}</h3>
-                
+
                 {/* Footer with cost, date and reorder icon */}
                 <div className="flex items-center justify-between">
                   <div className="flex flex-col">
@@ -87,7 +87,7 @@ export default function ConsumerDemoPage() {
         {/* Nearby Cafes Section */}
         <div className="mb-4">
           <h2 className="text-lg font-semibold text-primary mb-3">Nearby Cafes</h2>
-          
+
           {/* Nearby Cafes - 1 per row, vertical layout */}
           <div className="space-y-3 mb-4">
             {[
@@ -97,8 +97,8 @@ export default function ConsumerDemoPage() {
               { id: 4, name: 'Roasted Dreams', address: '321 Elm St', hours: 'Open until 10pm', badge: 'Featured', status: 'Ready in 15 min' },
               { id: 5, name: 'Coffee Corner', address: '654 Maple Dr', hours: 'Open until 6pm', badge: 'Local', status: 'Ready in 8 min' }
             ].map((cafe) => (
-              <div 
-                key={cafe.id} 
+              <div
+                key={cafe.id}
                 className="bg-white border border-primary/20 rounded-lg overflow-hidden hover:shadow-md hover:border-accent1/40 transition-all cursor-pointer"
                 onClick={() => handleCafeClick(cafe.name)}
               >
@@ -108,12 +108,12 @@ export default function ConsumerDemoPage() {
                   <div className="absolute top-2 left-2 bg-accent1 text-white px-2 py-1 rounded text-xs font-medium shadow-sm">
                     {cafe.badge}
                   </div>
-                  
+
                   <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-lg">
                     <span className="text-2xl font-bold text-primary">{cafe.name.charAt(0)}</span>
                   </div>
                 </div>
-                
+
                 {/* Cafe Info and Actions - Below image */}
                 <div className="p-3">
                   <div className="flex justify-between items-start">
@@ -122,7 +122,7 @@ export default function ConsumerDemoPage() {
                       <p className="text-xs text-primary/70 mb-0.5">{cafe.address}</p>
                       <p className="text-xs text-primary/60">{cafe.hours}</p>
                     </div>
-                    
+
                     {/* Action Icons and Status */}
                     <div className="flex flex-col items-end gap-1 ml-3">
                       <div className="flex items-center gap-2">
@@ -137,30 +137,28 @@ export default function ConsumerDemoPage() {
                           </svg>
                         </button>
                       </div>
-                      
+
                       {/* Order Button */}
-                      <button 
+                      <button
                         onClick={(e) => {
                           e.stopPropagation();
                           handleCafeClick(cafe.name);
                         }}
                         disabled={cafe.status.toLowerCase().includes('offline')}
-                        className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
-                          cafe.status.toLowerCase().includes('offline')
-                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                            : 'bg-accent1 text-white hover:bg-accent1/90 active:scale-95'
-                        }`}
+                        className={`px-3 py-1 rounded text-xs font-medium transition-colors ${cafe.status.toLowerCase().includes('offline')
+                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                          : 'bg-accent1 text-white hover:bg-accent1/90 active:scale-95'
+                          }`}
                       >
                         {cafe.status.toLowerCase().includes('offline') ? 'Offline' : 'Order'}
                       </button>
-                      
+
                       {/* Status - Under button */}
                       <div className="text-xs font-medium">
-                        <span className={`${
-                          cafe.status.toLowerCase().includes('offline') 
-                            ? 'text-red-600' 
-                            : 'text-accent2'
-                        }`}>
+                        <span className={`${cafe.status.toLowerCase().includes('offline')
+                          ? 'text-red-600'
+                          : 'text-accent2'
+                          }`}>
                           {cafe.status}
                         </span>
                       </div>
