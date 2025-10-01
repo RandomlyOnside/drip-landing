@@ -2,13 +2,24 @@
 
 import { Layout, QuickActions } from '@/components/consumer';
 import { MockDataService } from '@/lib/mockDataService';
+import { PWADetector } from '@/components/PWADetector';
+import { usePWAConditional } from '@/components/PWADetector';
+import { useRouter } from 'next/navigation';
 export default function ConsumerDemoPage() {
   const user = MockDataService.getMockConsumerUser();
   const firstName = user.name.split(' ')[0]; // Extract first name from "John Doe"
+  const { isPWA, renderIfBrowser, renderIfPWA } = usePWAConditional();
+  const router = useRouter();
+
+  const handleCafeClick = (cafeName: string) => {
+    router.push(`/portal/consumer-demo/order/menu?cafe=${encodeURIComponent(cafeName)}`);
+  };
 
   return (
     <Layout>
       <div className="max-w-4xl mx-auto">
+
+        
         {/* Welcome Section with Logo */}
         <div className="mb-4 flex items-center gap-4">
           <img 
@@ -16,9 +27,18 @@ export default function ConsumerDemoPage() {
             alt="Local Drip Logo" 
             className="w-10 h-10 md:w-12 md:h-12"
           />
-          <h1 className="text-2xl md:text-3xl font-bold text-primary">
-            Welcome {firstName}!
-          </h1>
+          <div className="flex-1">
+            <h1 className="text-2xl md:text-3xl font-bold text-primary">
+              Welcome {firstName}!
+            </h1>
+            {/* Show different subtitle based on PWA vs browser */}
+            {renderIfPWA(
+              <p className="text-sm text-primary-60">Using LocalDrip App</p>
+            )}
+            {renderIfBrowser(
+              <p className="text-sm text-primary-60">Using LocalDrip Web</p>
+            )}
+          </div>
         </div>
 
         {/* Quick Actions Sub-Menu */}
@@ -77,7 +97,11 @@ export default function ConsumerDemoPage() {
               { id: 4, name: 'Roasted Dreams', address: '321 Elm St', hours: 'Open until 10pm', badge: 'Featured', status: 'Ready in 15 min' },
               { id: 5, name: 'Coffee Corner', address: '654 Maple Dr', hours: 'Open until 6pm', badge: 'Local', status: 'Ready in 8 min' }
             ].map((cafe) => (
-              <div key={cafe.id} className="bg-white border border-primary/20 rounded-lg overflow-hidden hover:shadow-md hover:border-accent1/40 transition-all">
+              <div 
+                key={cafe.id} 
+                className="bg-white border border-primary/20 rounded-lg overflow-hidden hover:shadow-md hover:border-accent1/40 transition-all cursor-pointer"
+                onClick={() => handleCafeClick(cafe.name)}
+              >
                 {/* Cafe Image/Logo - Full width on top */}
                 <div className="w-full h-32 bg-gradient-to-br from-primary/10 to-accent2/20 flex items-center justify-center relative">
                   {/* Badge/Tag on top of image */}
@@ -114,7 +138,23 @@ export default function ConsumerDemoPage() {
                         </button>
                       </div>
                       
-                      {/* Status - Under icons */}
+                      {/* Order Button */}
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleCafeClick(cafe.name);
+                        }}
+                        disabled={cafe.status.toLowerCase().includes('offline')}
+                        className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
+                          cafe.status.toLowerCase().includes('offline')
+                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                            : 'bg-accent1 text-white hover:bg-accent1/90 active:scale-95'
+                        }`}
+                      >
+                        {cafe.status.toLowerCase().includes('offline') ? 'Offline' : 'Order'}
+                      </button>
+                      
+                      {/* Status - Under button */}
                       <div className="text-xs font-medium">
                         <span className={`${
                           cafe.status.toLowerCase().includes('offline') 

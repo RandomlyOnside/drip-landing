@@ -1,4 +1,4 @@
-const CACHE_NAME = 'consumer-portal-v1';
+const CACHE_NAME = 'localdrip-v1';
 const urlsToCache = [
   '/',
   '/portal/consumer-demo',

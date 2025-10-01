@@ -13,7 +13,15 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'Consumer Portal',
+    title: 'LocalDrip',
+  },
+  icons: {
+    icon: [
+      { url: '/images/ld-color-drip.svg', type: 'image/svg+xml' },
+      { url: '/favicon.svg', type: 'image/svg+xml' }
+    ],
+    apple: '/images/ld-color-drip.svg',
+    shortcut: '/images/ld-color-drip.svg'
   },
   openGraph: {
     title: 'Local Drip - Neighborhood coffee, fair & easy',
@@ -26,7 +34,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#000000',
+  themeColor: '#d35400',
 }
 
 export default function RootLayout({
@@ -42,9 +50,11 @@ export default function RootLayout({
       <head>
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="Consumer Portal" />
+        <meta name="apple-mobile-web-app-title" content="LocalDrip" />
         <meta name="mobile-web-app-capable" content="yes" />
-        <link rel="apple-touch-icon" href="/images/icon-192.png" />
+        <link rel="apple-touch-icon" href="/images/ld-color-drip.svg" />
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="shortcut icon" href="/images/ld-color-drip.svg" />
       </head>
       <body className="font-sans bg-secondary text-primary antialiased min-h-screen">
         {gaId && <GoogleAnalytics gaId={gaId} adsId={adsId} />}
@@ -69,6 +79,13 @@ export default function RootLayout({
                     });
                 });
               }
+              
+              // PWA install prompt handling
+              let deferredPrompt;
+              window.addEventListener('beforeinstallprompt', (e) => {
+                console.log('PWA install prompt available');
+                deferredPrompt = e;
+              });
             `,
           }}
         />

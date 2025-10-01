@@ -4,5 +4,10 @@ export { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 export { Input } from './input';
 export { Label } from './label';
 export { Separator } from './separator';
+
+// PWA Components
+export { PWADetector, PWAStatus, usePWAConditional } from '../PWADetector';
+export { PWAInstallButton, PWAInstallPrompt } from '../PWAInstallButton';
+export { usePWA, isPWAInstalled, getPWADisplayMode, getPlatform } from '../../hooks/usePWA';
 export { Toast } from './toast';
 export { ToastContainer } from './toast-container';

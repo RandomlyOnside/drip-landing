@@ -3,7 +3,7 @@
 import React from 'react';
 import { Navigation } from './Navigation';
 import { BottomNavigation } from './BottomNavigation';
-import PWAInstallPrompt from './PWAInstallPrompt';
+
 import { Logo } from '@/components/ui/Logo';
 import SiteFooter from '@/components/SiteFooter';
 
@@ -48,9 +48,6 @@ export function Layout({ children }: LayoutProps) {
 
       {/* Bottom Navigation - Mobile Only */}
       <BottomNavigation />
-
-      {/* PWA Install Prompt */}
-      <PWAInstallPrompt />
     </div>
   );
 }

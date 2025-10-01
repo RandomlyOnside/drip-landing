@@ -3,36 +3,12 @@
 import { useState, useEffect } from 'react';
 import { Layout, QuickActions } from '@/components/consumer';
 import { useToast } from '@/lib/toast';
+import { useCart } from '@/contexts';
 
 export default function CartPage() {
   const [progressWidth, setProgressWidth] = useState(0);
   const { showSuccess, showInfo } = useToast();
-
-  // Mock cart items
-  const [cartItems, setCartItems] = useState([
-    {
-      id: 1,
-      name: 'Vanilla Latte',
-      cafe: 'Local Drip Coffee',
-      size: 'Large',
-      shots: 2,
-      flavors: ['Vanilla'],
-      addIns: ['Extra Foam'],
-      price: 5.25,
-      quantity: 1
-    },
-    {
-      id: 2,
-      name: 'Americano',
-      cafe: 'Local Drip Coffee',
-      size: 'Medium',
-      shots: 2,
-      flavors: [],
-      addIns: [],
-      price: 3.25,
-      quantity: 2
-    }
-  ]);
+  const { cartItems, updateQuantity, removeFromCart, getTotalItems, getTotalPrice } = useCart();
 
   // Animate progress bar on page load
   useEffect(() => {
@@ -42,24 +18,22 @@ export default function CartPage() {
     return () => clearTimeout(timer);
   }, []);
 
-  const updateQuantity = (id: number, newQuantity: number) => {
+  const handleUpdateQuantity = (id: string, newQuantity: number) => {
     if (newQuantity === 0) {
-      setCartItems(prev => prev.filter(item => item.id !== id));
+      removeFromCart(id);
       showInfo('Item removed from cart');
     } else {
-      setCartItems(prev => prev.map(item => 
-        item.id === id ? { ...item, quantity: newQuantity } : item
-      ));
+      updateQuantity(id, newQuantity);
     }
   };
 
-  const removeItem = (id: number) => {
-    setCartItems(prev => prev.filter(item => item.id !== id));
+  const handleRemoveItem = (id: string) => {
+    removeFromCart(id);
     showInfo('Item removed from cart');
   };
 
   const calculateSubtotal = () => {
-    return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+    return getTotalPrice();
   };
 
   const calculateTax = () => {
@@ -126,17 +100,17 @@ export default function CartPage() {
               <div className="flex items-start justify-between mb-3">
                 <div className="flex-1">
                   <h3 className="text-lg font-semibold text-primary mb-1">{item.name}</h3>
-                  <p className="text-sm text-primary/70 mb-1">{item.cafe}</p>
-                  <p className="text-xs text-primary/60">
-                    {item.size} • {item.shots} shot{item.shots > 1 ? 's' : ''}
-                    {item.flavors.length > 0 && ` • ${item.flavors.join(', ')}`}
-                    {item.addIns.length > 0 && ` • ${item.addIns.join(', ')}`}
-                  </p>
+                  <p className="text-sm text-primary/70 mb-1">Local Drip Coffee</p>
+                  {item.customizations && (
+                    <p className="text-xs text-primary/60">
+                      {item.customizations}
+                    </p>
+                  )}
                 </div>
                 <div className="text-right">
                   <div className="text-lg font-bold text-primary">${(item.price * item.quantity).toFixed(2)}</div>
                   <button
-                    onClick={() => removeItem(item.id)}
+                    onClick={() => handleRemoveItem(item.id)}
                     className="text-xs text-red-500 hover:text-red-700 transition-colors"
                   >
                     Remove
@@ -150,7 +124,7 @@ export default function CartPage() {
                   <span className="text-sm text-primary/70">Quantity:</span>
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                      onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
                       className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center hover:bg-primary/20 transition-colors"
                     >
                       <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -159,7 +133,7 @@ export default function CartPage() {
                     </button>
                     <span className="w-8 text-center font-medium text-primary">{item.quantity}</span>
                     <button
-                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                      onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
                       className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center hover:bg-primary/20 transition-colors"
                     >
                       <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">

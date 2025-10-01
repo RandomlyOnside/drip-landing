@@ -1,4 +1,4 @@
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, query, where, getDocs } from 'firebase/firestore';
 import { db } from './firebase';
 
 export interface SignupData {
@@ -24,7 +24,6 @@ export async function saveSignupToFirestore(signupData: SignupData): Promise<Sig
     }
 
     // Check for existing email first
-    const { query, where, getDocs } = await import('firebase/firestore');
     const existingQuery = query(
       collection(db, 'signups'), 
       where('email', '==', signupData.email)

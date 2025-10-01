@@ -1,14 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Layout, QuickActions } from '@/components/consumer';
+import { Layout, QuickActions, CartBadge } from '@/components/consumer';
 import { useToast } from '@/lib/toast';
 import { useSearchParams } from 'next/navigation';
 
 export default function MenuPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [progressWidth, setProgressWidth] = useState(0);
-  const [cartItems, setCartItems] = useState<string[]>([]);
   const { showSuccess, showInfo } = useToast();
   const searchParams = useSearchParams();
   const cafeName = searchParams.get('cafe') || 'Selected Cafe';
@@ -58,11 +57,6 @@ export default function MenuPage() {
     }, 300);
     return () => clearTimeout(timer);
   }, []);
-
-  const handleAddToCart = (itemId: string, itemName: string) => {
-    setCartItems(prev => [...prev, itemId]);
-    showSuccess(`${itemName} added to cart!`);
-  };
 
   const handleQuickOrder = (itemId: string, itemName: string) => {
     showInfo(`Quick ordering ${itemName}...`);
@@ -124,11 +118,7 @@ export default function MenuPage() {
               <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
               </svg>
-              {cartItems.length > 0 && (
-                <span className="absolute -top-1 -right-1 bg-accent1 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
-                  {cartItems.length}
-                </span>
-              )}
+              <CartBadge />
             </button>
           </div>
         </div>
@@ -198,8 +188,6 @@ export default function MenuPage() {
             </div>
           ))}
         </div>
-
-
       </div>
     </Layout>
   );
