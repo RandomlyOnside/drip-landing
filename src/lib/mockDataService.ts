@@ -132,4 +132,117 @@ export class MockDataService {
       ]
     };
   }
+
+  /**
+   * Returns mock frequently ordered items for the consumer portal
+   * @returns Array of frequently ordered items with images and details
+   */
+  static getMockFrequentItems() {
+    return [
+      {
+        id: "item-1",
+        name: "Signature Blend Coffee",
+        price: 12.99,
+        image: "☕",
+        cafe: "Roasted Grounds",
+        isSpecial: false,
+        orderCount: 8
+      },
+      {
+        id: "item-2",
+        name: "Artisan Croissant",
+        price: 4.50,
+        image: "🥐",
+        cafe: "Morning Bakery",
+        isSpecial: true,
+        orderCount: 5
+      },
+      {
+        id: "item-3",
+        name: "Cold Brew Concentrate",
+        price: 15.99,
+        image: "🧊",
+        cafe: "Brew Masters",
+        isSpecial: false,
+        orderCount: 6
+      },
+      {
+        id: "item-4",
+        name: "Seasonal Pumpkin Latte",
+        price: 6.75,
+        image: "🎃",
+        cafe: "Cozy Corner",
+        isSpecial: true,
+        orderCount: 3
+      },
+      {
+        id: "item-5",
+        name: "Fresh Bagel & Cream Cheese",
+        price: 5.25,
+        image: "🥯",
+        cafe: "Daily Bread",
+        isSpecial: false,
+        orderCount: 7
+      }
+    ];
+  }
+
+  /**
+   * Returns mock social media feed for local cafes
+   * @returns Array of social media posts from nearby cafes
+   */
+  static getMockSocialFeed() {
+    return [
+      {
+        id: "post-1",
+        cafe: "Roasted Grounds",
+        username: "@roastedgrounds",
+        image: "☕",
+        caption: "Fresh roasted beans just arrived! Come try our new Ethiopian blend ✨",
+        likes: 42,
+        timeAgo: "2h",
+        distance: "0.3 miles"
+      },
+      {
+        id: "post-2",
+        cafe: "Morning Bakery",
+        username: "@morningbakery",
+        image: "🥐",
+        caption: "Weekend special: Almond croissants are back by popular demand! 🥐✨",
+        likes: 28,
+        timeAgo: "4h",
+        distance: "0.5 miles"
+      },
+      {
+        id: "post-3",
+        cafe: "Brew Masters",
+        username: "@brewmasters",
+        image: "🧊",
+        caption: "Beat the heat with our signature cold brew. Perfect for this sunny day! ☀️",
+        likes: 35,
+        timeAgo: "6h",
+        distance: "0.8 miles"
+      },
+      {
+        id: "post-4",
+        cafe: "Cozy Corner",
+        username: "@cozycorner",
+        image: "🎃",
+        caption: "Fall vibes are here! Our pumpkin spice everything is ready 🍂",
+        likes: 51,
+        timeAgo: "8h",
+        distance: "1.2 miles"
+      },
+      {
+        id: "post-5",
+        cafe: "Daily Bread",
+        username: "@dailybread",
+        image: "🥯",
+        caption: "Fresh bagels baked every morning. What's your favorite topping? 🥯",
+        likes: 19,
+        timeAgo: "12h",
+        distance: "0.7 miles"
+      }
+    ];
+  }
 }

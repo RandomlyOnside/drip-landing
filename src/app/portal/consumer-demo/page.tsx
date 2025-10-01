@@ -1,61 +1,140 @@
 'use client';
 
-import { Layout } from '@/components/consumer/Layout';
-
+import { Layout, QuickActions } from '@/components/consumer';
+import { MockDataService } from '@/lib/mockDataService';
 export default function ConsumerDemoPage() {
+  const user = MockDataService.getMockConsumerUser();
+  const firstName = user.name.split(' ')[0]; // Extract first name from "John Doe"
 
   return (
     <Layout>
       <div className="max-w-4xl mx-auto">
-        {/* Welcome Section */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-primary mb-4">
-            Welcome to Consumer Portal
+        {/* Welcome Section with Logo */}
+        <div className="mb-4 flex items-center gap-4">
+          <img 
+            src="/images/ld-color-drip.svg" 
+            alt="Local Drip Logo" 
+            className="w-10 h-10 md:w-12 md:h-12"
+          />
+          <h1 className="text-2xl md:text-3xl font-bold text-primary">
+            Welcome {firstName}!
           </h1>
-          <p className="text-lg text-primary/80">
-            Your gateway to managing orders and account information
-          </p>
         </div>
 
-        {/* Quick Actions Grid */}
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white border border-primary/20 rounded-lg p-6 text-center hover:shadow-md hover:border-accent2/40 transition-all">
-            <div className="text-4xl mb-4">🏠</div>
-            <h3 className="text-lg font-semibold mb-2 text-primary">Home</h3>
-            <p className="text-primary/70 text-sm">
-              Access your dashboard and overview
-            </p>
+        {/* Quick Actions Sub-Menu */}
+        <QuickActions className="mb-2" />
+
+
+        {/* Recent Orders Section */}
+        <div className="mb-4">
+          <h2 className="text-lg font-semibold text-primary mb-3">Recent Orders</h2>
+          
+          {/* Recent Orders - 3 items in a row */}
+          <div className="grid grid-cols-3 gap-2 mb-4">
+            {MockDataService.getMockFrequentItems().slice(0, 3).map((item) => (
+              <div key={item.id} className="bg-white border border-primary/20 rounded-lg p-2 hover:shadow-md hover:border-accent1/40 transition-all">
+                {/* Header with logo and cafe name */}
+                <div className="flex items-center gap-2 mb-1.5">
+                  <div className="w-5 h-5 bg-primary/10 rounded flex items-center justify-center">
+                    <span className="text-xs font-bold text-primary">L</span>
+                  </div>
+                  <p className="text-xs text-primary/70 truncate">{item.cafe}</p>
+                </div>
+                
+                {/* Item name */}
+                <h3 className="text-xs font-semibold text-primary truncate mb-1.5">{item.name}</h3>
+                
+                {/* Footer with cost, date and reorder icon */}
+                <div className="flex items-center justify-between">
+                  <div className="flex flex-col">
+                    <span className="text-xs font-bold text-primary">${item.price}</span>
+                    <span className="text-xs text-primary/60">2 days ago</span>
+                  </div>
+                  <button className="p-1 hover:bg-primary/5 rounded transition-colors">
+                    <svg className="w-4 h-4 text-primary/70 hover:text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
 
-          <div className="bg-white border border-primary/20 rounded-lg p-6 text-center hover:shadow-md hover:border-accent1/40 transition-all">
-            <div className="text-4xl mb-4">📦</div>
-            <h3 className="text-lg font-semibold mb-2 text-primary">Orders</h3>
-            <p className="text-primary/70 text-sm">
-              View and manage your orders
-            </p>
-          </div>
+          {/* Divider */}
+          <div className="border-b border-primary/10"></div>
+        </div>
 
-          <div className="bg-white border border-primary/20 rounded-lg p-6 text-center hover:shadow-md hover:border-accent2/40 transition-all">
-            <div className="text-4xl mb-4">👤</div>
-            <h3 className="text-lg font-semibold mb-2 text-primary">Profile</h3>
-            <p className="text-primary/70 text-sm">
-              Update your account settings
-            </p>
+        {/* Nearby Cafes Section */}
+        <div className="mb-4">
+          <h2 className="text-lg font-semibold text-primary mb-3">Nearby Cafes</h2>
+          
+          {/* Nearby Cafes - 1 per row, vertical layout */}
+          <div className="space-y-3 mb-4">
+            {[
+              { id: 1, name: 'Local Drip Coffee', address: '123 Main St', hours: 'Open until 8pm', badge: 'Popular', status: 'Ready in 10 min' },
+              { id: 2, name: 'Bean There Cafe', address: '456 Oak Ave', hours: 'Open until 9pm', badge: 'New', status: 'Offline' },
+              { id: 3, name: 'Morning Brew', address: '789 Pine St', hours: 'Open until 7pm', badge: 'Fast', status: 'Ready in 5 min' },
+              { id: 4, name: 'Roasted Dreams', address: '321 Elm St', hours: 'Open until 10pm', badge: 'Featured', status: 'Ready in 15 min' },
+              { id: 5, name: 'Coffee Corner', address: '654 Maple Dr', hours: 'Open until 6pm', badge: 'Local', status: 'Ready in 8 min' }
+            ].map((cafe) => (
+              <div key={cafe.id} className="bg-white border border-primary/20 rounded-lg overflow-hidden hover:shadow-md hover:border-accent1/40 transition-all">
+                {/* Cafe Image/Logo - Full width on top */}
+                <div className="w-full h-32 bg-gradient-to-br from-primary/10 to-accent2/20 flex items-center justify-center relative">
+                  {/* Badge/Tag on top of image */}
+                  <div className="absolute top-2 left-2 bg-accent1 text-white px-2 py-1 rounded text-xs font-medium shadow-sm">
+                    {cafe.badge}
+                  </div>
+                  
+                  <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-lg">
+                    <span className="text-2xl font-bold text-primary">{cafe.name.charAt(0)}</span>
+                  </div>
+                </div>
+                
+                {/* Cafe Info and Actions - Below image */}
+                <div className="p-3">
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <h3 className="text-sm font-semibold text-primary mb-1">{cafe.name}</h3>
+                      <p className="text-xs text-primary/70 mb-0.5">{cafe.address}</p>
+                      <p className="text-xs text-primary/60">{cafe.hours}</p>
+                    </div>
+                    
+                    {/* Action Icons and Status */}
+                    <div className="flex flex-col items-end gap-1 ml-3">
+                      <div className="flex items-center gap-2">
+                        <button className="p-2 hover:bg-primary/5 rounded transition-colors">
+                          <svg className="w-5 h-5 text-primary/70 hover:text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                          </svg>
+                        </button>
+                        <button className="p-2 hover:bg-red-50 rounded transition-colors">
+                          <svg className="w-5 h-5 text-primary/70 hover:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.682l-1.318-1.364a4.5 4.5 0 00-6.364 0z" />
+                          </svg>
+                        </button>
+                      </div>
+                      
+                      {/* Status - Under icons */}
+                      <div className="text-xs font-medium">
+                        <span className={`${
+                          cafe.status.toLowerCase().includes('offline') 
+                            ? 'text-red-600' 
+                            : 'text-accent2'
+                        }`}>
+                          {cafe.status}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* Getting Started */}
-        <div className="bg-primary/5 border border-primary/10 rounded-lg p-6">
-          <h2 className="text-xl font-semibold mb-4 text-primary">Getting Started</h2>
-          <p className="text-primary/80 mb-4">
-            Use the navigation menu above to explore different sections of the consumer portal.
-          </p>
-          <div className="text-sm text-primary/70">
-            <p>• <strong className="text-primary">Home:</strong> View your dashboard and recent activity</p>
-            <p>• <strong className="text-primary">Orders:</strong> Track and manage your orders</p>
-            <p>• <strong className="text-primary">Profile:</strong> Update your personal information and preferences</p>
-          </div>
-        </div>
+
+
+
       </div>
     </Layout>
   );

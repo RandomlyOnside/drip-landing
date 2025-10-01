@@ -1,243 +1,171 @@
 'use client';
 
-import { useState } from 'react';
-import { Layout } from '@/components/consumer/Layout';
+import { useState, useEffect } from 'react';
+import { Layout, QuickActions } from '@/components/consumer';
 import { MockDataService } from '@/lib/mockDataService';
-import { Order } from '@/lib/types';
 import { useToast } from '@/lib/toast';
 
 export default function OrderPage() {
-  const [orders] = useState<Order[]>(MockDataService.getMockOrders());
-  const [filter, setFilter] = useState<'all' | 'pending' | 'completed' | 'cancelled'>('all');
-  const { showSuccess, showInfo, showError } = useToast();
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [progressWidth, setProgressWidth] = useState(0);
+  const { showSuccess, showInfo } = useToast();
 
-  const handleViewDetails = (orderId: string) => {
-    showInfo(`Viewing details for order #${orderId}`);
+  // Animate progress bar on page load
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setProgressWidth(10);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Get menu items from mock data service
+  const menuItems = MockDataService.getMockFrequentItems();
+  const categories = ['all', 'coffee', 'food', 'pastries', 'drinks'];
+
+  const handleAddToCart = (itemId: string, itemName: string) => {
+    showSuccess(`${itemName} added to cart!`);
   };
 
-  const handleReorder = (orderId: string) => {
-    showSuccess(`Items from order #${orderId} added to cart!`);
+  const handleQuickOrder = (itemId: string, itemName: string) => {
+    showInfo(`Quick ordering ${itemName}...`);
   };
 
-  const handleCancelOrder = (orderId: string) => {
-    showError(`Order #${orderId} has been cancelled`);
-  };
-
-  const handleBrowseMenu = () => {
-    showInfo('Menu browsing feature coming soon!');
-  };
-
-  // Filter orders based on selected filter
-  const filteredOrders = orders.filter(order => 
-    filter === 'all' || order.status === filter
-  );
-
-  // Status badge styling
-  const getStatusBadge = (status: Order['status']) => {
-    const baseClasses = "px-2 py-1 rounded-full text-xs font-medium";
-    switch (status) {
-      case 'completed':
-        return `${baseClasses} bg-green-100 text-green-800`;
-      case 'pending':
-        return `${baseClasses} bg-yellow-100 text-yellow-800`;
-      case 'cancelled':
-        return `${baseClasses} bg-red-100 text-red-800`;
-      default:
-        return `${baseClasses} bg-gray-100 text-gray-800`;
-    }
-  };
+  // Filter items by category (mock filtering for now)
+  const filteredItems = selectedCategory === 'all' 
+    ? menuItems 
+    : menuItems.filter(item => 
+        item.name.toLowerCase().includes(selectedCategory.toLowerCase()) ||
+        (selectedCategory === 'coffee' && item.name.toLowerCase().includes('latte')) ||
+        (selectedCategory === 'food' && item.name.toLowerCase().includes('sandwich')) ||
+        (selectedCategory === 'pastries' && item.name.toLowerCase().includes('croissant'))
+      );
 
   return (
     <Layout>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Section */}
-        <div className="mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-primary mb-2">
-            Your Orders
+        <div className="mb-6">
+          <h1 className="text-2xl sm:text-3xl font-bold text-primary">
+            Order Now
           </h1>
-          <p className="text-base sm:text-lg text-primary/80">
-            Track and manage your order history
-          </p>
         </div>
 
-        {/* Filter Section */}
-        <div className="mb-6">
-          <div className="flex flex-wrap gap-2 sm:gap-4">
-            {(['all', 'pending', 'completed', 'cancelled'] as const).map((status) => (
-              <button
-                key={status}
-                onClick={() => setFilter(status)}
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  filter === status
-                    ? 'bg-primary text-white'
-                    : 'bg-white border border-primary/20 text-primary hover:bg-primary/5'
-                }`}
-              >
-                {status.charAt(0).toUpperCase() + status.slice(1)}
-                {status !== 'all' && (
-                  <span className="ml-1 text-xs opacity-75">
-                    ({orders.filter(o => o.status === status).length})
-                  </span>
-                )}
-                {status === 'all' && (
-                  <span className="ml-1 text-xs opacity-75">
-                    ({orders.length})
-                  </span>
-                )}
-              </button>
-            ))}
+        {/* Quick Actions */}
+        <QuickActions className="mb-4" />
+
+        {/* Step Progress Bar */}
+        <div className="mb-6 bg-white border border-primary/20 rounded-lg p-3">
+          <style jsx>{`
+            @keyframes colorTransition {
+              0%, 100% { background: #D35400; }
+              50% { background: #7D9A6D; }
+            }
+            @keyframes shimmer {
+              0% { transform: translateX(-100%); }
+              100% { transform: translateX(100%); }
+            }
+          `}</style>
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm font-medium text-primary">Step 1: Select Cafe</span>
+            <span className="text-xs text-primary/60">10%</span>
+          </div>
+          <div className="w-full bg-primary/10 rounded-full h-2 overflow-hidden">
+            <div 
+              className="h-2 rounded-full relative transition-all duration-700 ease-out"
+              style={{ 
+                width: `${progressWidth}%`,
+                background: '#D35400',
+                animation: progressWidth > 0 ? 'colorTransition 3s ease-in-out 0.5s infinite' : 'none'
+              }}
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent w-full animate-[shimmer_2s_ease-in-out_infinite]"></div>
+            </div>
           </div>
         </div>
 
-        {/* Orders List/Grid */}
-        {filteredOrders.length > 0 ? (
-          <div className="space-y-4 sm:space-y-6">
-            {filteredOrders.map((order) => (
-              <div
-                key={order.id}
-                className="bg-white border border-primary/20 rounded-lg p-4 sm:p-6 hover:shadow-md transition-shadow"
+        {/* Google Map Section */}
+        <div className="mb-6">
+          <div className="w-full h-64 bg-gray-200 rounded-lg flex items-center justify-center border border-primary/20">
+            <div className="text-center">
+              <div className="text-4xl mb-2">🗺️</div>
+              <p className="text-sm text-primary/70">Google Maps Integration</p>
+              <p className="text-xs text-primary/50">Map showing nearby cafes</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Nearby Cafes Section */}
+        <div className="mb-4">
+          <h2 className="text-lg font-semibold text-primary mb-3">Nearby Cafes</h2>
+          
+          {/* Nearby Cafes - 1 per row, vertical layout */}
+          <div className="space-y-3 mb-4">
+            {[
+              { id: 1, name: 'Local Drip Coffee', address: '123 Main St', hours: 'Open until 8pm', badge: 'Popular', status: 'Ready in 10 min' },
+              { id: 2, name: 'Bean There Cafe', address: '456 Oak Ave', hours: 'Open until 9pm', badge: 'New', status: 'Offline' },
+              { id: 3, name: 'Morning Brew', address: '789 Pine St', hours: 'Open until 7pm', badge: 'Fast', status: 'Ready in 5 min' },
+              { id: 4, name: 'Roasted Dreams', address: '321 Elm St', hours: 'Open until 10pm', badge: 'Featured', status: 'Ready in 15 min' },
+              { id: 5, name: 'Coffee Corner', address: '654 Maple Dr', hours: 'Open until 6pm', badge: 'Local', status: 'Ready in 8 min' }
+            ].map((cafe) => (
+              <div 
+                key={cafe.id} 
+                className="bg-white border border-primary/20 rounded-lg overflow-hidden hover:shadow-md hover:border-accent1/40 transition-all cursor-pointer"
+                onClick={() => window.location.href = `/portal/consumer-demo/order/menu?cafe=${encodeURIComponent(cafe.name)}`}
               >
-                {/* Order Header */}
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
-                  <div className="mb-2 sm:mb-0">
-                    <h3 className="text-lg font-semibold text-primary">
-                      Order #{order.id}
-                    </h3>
-                    <p className="text-sm text-primary/70">
-                      {new Date(order.date).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                      })}
-                    </p>
+                {/* Cafe Image/Logo - Full width on top */}
+                <div className="w-full h-32 bg-gradient-to-br from-primary/10 to-accent2/20 flex items-center justify-center relative">
+                  {/* Badge/Tag on top of image */}
+                  <div className="absolute top-2 left-2 bg-accent1 text-white px-2 py-1 rounded text-xs font-medium shadow-sm">
+                    {cafe.badge}
                   </div>
-                  <div className="flex items-center gap-3">
-                    <span className={getStatusBadge(order.status)}>
-                      {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                    </span>
-                    <div className="text-lg font-bold text-primary">
-                      ${order.total.toFixed(2)}
+                  
+                  <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-lg">
+                    <span className="text-2xl font-bold text-primary">{cafe.name.charAt(0)}</span>
+                  </div>
+                </div>
+                
+                {/* Cafe Info and Actions - Below image */}
+                <div className="p-3">
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <h3 className="text-sm font-semibold text-primary mb-1">{cafe.name}</h3>
+                      <p className="text-xs text-primary/70 mb-0.5">{cafe.address}</p>
+                      <p className="text-xs text-primary/60">{cafe.hours}</p>
+                    </div>
+                    
+                    {/* Action Icons and Status */}
+                    <div className="flex flex-col items-end gap-1 ml-3">
+                      <div className="flex items-center gap-2">
+                        <button className="p-2 hover:bg-primary/5 rounded transition-colors">
+                          <svg className="w-5 h-5 text-primary/70 hover:text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                          </svg>
+                        </button>
+                        <button className="p-2 hover:bg-red-50 rounded transition-colors">
+                          <svg className="w-5 h-5 text-primary/70 hover:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.682l-1.318-1.364a4.5 4.5 0 00-6.364 0z" />
+                          </svg>
+                        </button>
+                      </div>
+                      
+                      {/* Status - Under icons */}
+                      <div className="text-xs font-medium">
+                        <span className={`${
+                          cafe.status.toLowerCase().includes('offline') 
+                            ? 'text-red-600' 
+                            : 'text-accent2'
+                        }`}>
+                          {cafe.status}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
-
-                {/* Order Items */}
-                <div className="border-t border-primary/10 pt-4">
-                  <h4 className="text-sm font-medium text-primary/80 mb-3">Order Items</h4>
-                  <div className="grid gap-3">
-                    {order.items.map((item) => (
-                      <div
-                        key={item.id}
-                        className="flex items-center justify-between p-3 bg-primary/5 rounded-lg"
-                      >
-                        <div className="flex-1">
-                          <div className="font-medium text-primary text-sm">
-                            {item.name}
-                          </div>
-                          <div className="text-xs text-primary/60">
-                            Quantity: {item.quantity}
-                          </div>
-                        </div>
-                        <div className="text-sm font-medium text-primary">
-                          ${(item.price * item.quantity).toFixed(2)}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Order Actions */}
-                <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mt-4 pt-4 border-t border-primary/10">
-                  <button 
-                    onClick={() => handleViewDetails(order.id)}
-                    className="flex-1 sm:flex-none px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium"
-                  >
-                    View Details
-                  </button>
-                  {order.status === 'completed' && (
-                    <button 
-                      onClick={() => handleReorder(order.id)}
-                      className="flex-1 sm:flex-none px-4 py-2 bg-white border border-primary/20 text-primary rounded-lg hover:bg-primary/5 transition-colors text-sm font-medium"
-                    >
-                      Reorder
-                    </button>
-                  )}
-                  {order.status === 'pending' && (
-                    <button 
-                      onClick={() => handleCancelOrder(order.id)}
-                      className="flex-1 sm:flex-none px-4 py-2 bg-white border border-red-200 text-red-600 rounded-lg hover:bg-red-50 transition-colors text-sm font-medium"
-                    >
-                      Cancel Order
-                    </button>
-                  )}
-                </div>
               </div>
             ))}
           </div>
-        ) : (
-          /* Empty State */
-          <div className="text-center py-12">
-            <div className="w-24 h-24 mx-auto mb-6 bg-primary/10 rounded-full flex items-center justify-center">
-              <div className="text-4xl">📦</div>
-            </div>
-            <h3 className="text-xl font-semibold text-primary mb-2">
-              No {filter !== 'all' ? filter : ''} orders found
-            </h3>
-            <p className="text-primary/70 mb-6 max-w-md mx-auto">
-              {filter === 'all' 
-                ? "You haven't placed any orders yet. Start browsing our menu to place your first order!"
-                : `You don't have any ${filter} orders at the moment.`
-              }
-            </p>
-            <button 
-              onClick={handleBrowseMenu}
-              className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-medium"
-            >
-              Browse Menu
-            </button>
-          </div>
-        )}
-
-        {/* Order Summary Stats */}
-        {filteredOrders.length > 0 && (
-          <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <div className="bg-white border border-primary/20 rounded-lg p-4 text-center">
-              <div className="text-2xl font-bold text-primary mb-1">
-                {filteredOrders.length}
-              </div>
-              <div className="text-xs text-primary/70 font-medium">
-                {filter === 'all' ? 'Total Orders' : `${filter.charAt(0).toUpperCase() + filter.slice(1)} Orders`}
-              </div>
-            </div>
-            
-            <div className="bg-white border border-primary/20 rounded-lg p-4 text-center">
-              <div className="text-2xl font-bold text-primary mb-1">
-                ${filteredOrders.reduce((sum, order) => sum + order.total, 0).toFixed(2)}
-              </div>
-              <div className="text-xs text-primary/70 font-medium">
-                Total Value
-              </div>
-            </div>
-
-            <div className="bg-white border border-primary/20 rounded-lg p-4 text-center">
-              <div className="text-2xl font-bold text-primary mb-1">
-                {filteredOrders.reduce((sum, order) => sum + order.items.length, 0)}
-              </div>
-              <div className="text-xs text-primary/70 font-medium">
-                Total Items
-              </div>
-            </div>
-
-            <div className="bg-white border border-primary/20 rounded-lg p-4 text-center">
-              <div className="text-2xl font-bold text-primary mb-1">
-                ${filteredOrders.length > 0 ? (filteredOrders.reduce((sum, order) => sum + order.total, 0) / filteredOrders.length).toFixed(2) : '0.00'}
-              </div>
-              <div className="text-xs text-primary/70 font-medium">
-                Avg Order
-              </div>
-            </div>
-          </div>
-        )}
+        </div>
       </div>
     </Layout>
   );

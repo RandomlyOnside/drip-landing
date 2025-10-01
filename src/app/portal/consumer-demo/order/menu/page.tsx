@@ -1,0 +1,206 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { Layout, QuickActions } from '@/components/consumer';
+import { useToast } from '@/lib/toast';
+import { useSearchParams } from 'next/navigation';
+
+export default function MenuPage() {
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [progressWidth, setProgressWidth] = useState(0);
+  const [cartItems, setCartItems] = useState<string[]>([]);
+  const { showSuccess, showInfo } = useToast();
+  const searchParams = useSearchParams();
+  const cafeName = searchParams.get('cafe') || 'Selected Cafe';
+
+  // Mock menu data with categories and subcategories
+  const menuData = {
+    'Hot Coffees': {
+      'Brewed': [
+        { id: 1, name: 'House Blend', price: 2.50, image: '☕' },
+        { id: 2, name: 'Dark Roast', price: 2.75, image: '☕' },
+        { id: 3, name: 'Pike Place', price: 2.60, image: '☕' }
+      ],
+      'Americano': [
+        { id: 4, name: 'Americano', price: 3.25, image: '☕' },
+        { id: 5, name: 'Long Shot', price: 3.50, image: '☕' },
+        { id: 6, name: 'Red Eye', price: 3.75, image: '☕' }
+      ],
+      'Lattes': [
+        { id: 7, name: 'Vanilla Latte', price: 4.50, image: '🥛' },
+        { id: 8, name: 'Caramel Latte', price: 4.75, image: '🥛' },
+        { id: 9, name: 'Hazelnut Latte', price: 4.60, image: '🥛' }
+      ]
+    },
+    'Cold Coffees': {
+      'Cold Brew': [
+        { id: 10, name: 'Cold Brew', price: 3.50, image: '🧊' },
+        { id: 11, name: 'Vanilla Cold Brew', price: 4.00, image: '🧊' },
+        { id: 12, name: 'Nitro Cold Brew', price: 4.25, image: '🧊' }
+      ],
+      'Iced Coffee': [
+        { id: 13, name: 'Iced Coffee', price: 3.00, image: '🧊' },
+        { id: 14, name: 'Iced Americano', price: 3.25, image: '🧊' },
+        { id: 15, name: 'Iced Mocha', price: 4.50, image: '🧊' }
+      ],
+      'Iced Espresso': [
+        { id: 16, name: 'Iced Latte', price: 4.25, image: '🥤' },
+        { id: 17, name: 'Iced Cappuccino', price: 4.00, image: '🥤' },
+        { id: 18, name: 'Iced Macchiato', price: 4.75, image: '🥤' }
+      ]
+    }
+  };
+
+  // Animate progress bar on page load
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setProgressWidth(40); // Step 2 progress
+    }, 300);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const handleAddToCart = (itemId: string, itemName: string) => {
+    setCartItems(prev => [...prev, itemId]);
+    showSuccess(`${itemName} added to cart!`);
+  };
+
+  const handleQuickOrder = (itemId: string, itemName: string) => {
+    showInfo(`Quick ordering ${itemName}...`);
+  };
+
+
+
+  return (
+    <Layout>
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header Section */}
+        <div className="mb-6">
+          <h1 className="text-2xl sm:text-3xl font-bold text-primary">
+            {cafeName} Menu
+          </h1>
+        </div>
+
+        {/* Quick Actions */}
+        <QuickActions className="mb-4" />
+
+        {/* Step Progress Bar with Cart */}
+        <div className="mb-6 bg-white border border-primary/20 rounded-lg p-3 flex items-center justify-between">
+          <div className="flex-1">
+          <style jsx>{`
+            @keyframes colorTransition {
+              0%, 100% { background: #D35400; }
+              50% { background: #7D9A6D; }
+            }
+            @keyframes shimmer {
+              0% { transform: translateX(-100%); }
+              100% { transform: translateX(100%); }
+            }
+          `}</style>
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm font-medium text-primary">Step 2: Choose Items</span>
+            <span className="text-xs text-primary/60">40%</span>
+          </div>
+          <div className="w-full bg-primary/10 rounded-full h-2 overflow-hidden">
+            <div 
+              className="h-2 rounded-full relative transition-all duration-700 ease-out"
+              style={{ 
+                width: `${progressWidth}%`,
+                background: '#D35400',
+                animation: progressWidth > 0 ? 'colorTransition 3s ease-in-out 0.5s infinite' : 'none'
+              }}
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent w-full animate-[shimmer_2s_ease-in-out_infinite]"></div>
+            </div>
+          </div>
+          </div>
+
+          {/* Cart Icon */}
+          <div className="ml-4 relative">
+            <button 
+              onClick={() => window.location.href = '/portal/consumer-demo/order/cart'}
+              className="p-2 hover:bg-primary/5 rounded-lg transition-colors"
+            >
+              <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              </svg>
+              {cartItems.length > 0 && (
+                <span className="absolute -top-1 -right-1 bg-accent1 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
+                  {cartItems.length}
+                </span>
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* Category Filters */}
+        <div className="mb-6 flex flex-wrap gap-2">
+          {['all', 'Hot Coffees', 'Cold Coffees'].map((category) => (
+            <button
+              key={category}
+              onClick={() => setSelectedCategory(category)}
+              className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
+                selectedCategory === category
+                  ? 'bg-accent1 text-white'
+                  : 'bg-white border border-primary/20 text-primary hover:bg-primary/5'
+              }`}
+            >
+              {category === 'all' ? 'All' : category}
+            </button>
+          ))}
+        </div>
+
+        {/* Menu Categories */}
+        <div className="space-y-8">
+          {Object.entries(menuData)
+            .filter(([category]) => selectedCategory === 'all' || selectedCategory === category)
+            .map(([category, subcategories]) => (
+            <div key={category} className="space-y-4">
+              {/* Category Title */}
+              <h2 className="text-xl font-bold text-primary">{category}</h2>
+              
+              {/* Subcategories */}
+              {Object.entries(subcategories).map(([subcategory, items]) => (
+                <div key={subcategory} className="space-y-3">
+                  {/* Subcategory Title */}
+                  <h3 className="text-lg font-semibold text-primary/80">{subcategory}</h3>
+                  
+                  {/* Horizontal Scrolling Items */}
+                  <div className="flex gap-3 overflow-x-auto pb-2">
+                    {items.map((item) => (
+                      <div
+                        key={item.id}
+                        className="flex-shrink-0 w-32 h-32 bg-white border border-primary/20 rounded-lg overflow-hidden hover:shadow-md hover:border-accent1/40 transition-all cursor-pointer relative"
+                        onClick={() => window.location.href = `/portal/consumer-demo/order/customize?item=${encodeURIComponent(item.name)}&cafe=${encodeURIComponent(cafeName)}&price=${item.price}`}
+                      >
+                        {/* Square placeholder image background */}
+                        <div className="w-full h-full bg-gradient-to-br from-primary/10 to-accent2/20">
+                        </div>
+                        
+                        {/* Title overlay as square tag */}
+                        <div className="absolute top-2 left-2">
+                          <div className="bg-accent1 text-white px-1.5 py-0.5 rounded text-xs font-medium shadow-sm" style={{ fontSize: '10px' }}>
+                            {item.name}
+                          </div>
+                        </div>
+                        
+                        {/* Price pill in bottom right */}
+                        <div className="absolute bottom-2 right-2">
+                          <div className="bg-transparent text-accent2 px-1.5 py-0.5 rounded text-xs font-bold" style={{ fontSize: '10px' }}>
+                            ${item.price}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+
+
+      </div>
+    </Layout>
+  );
+}
