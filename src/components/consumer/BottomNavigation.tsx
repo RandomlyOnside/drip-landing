@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { usePWA } from '@/hooks/usePWA';
+import { OrderHeader } from './OrderHeader';
 import { CartBadge } from './index';
 
 interface BottomNavItem {
@@ -43,7 +44,11 @@ const bottomNavItems: BottomNavItem[] = [
   }
 ];
 
-export function BottomNavigation() {
+interface BottomNavigationProps {
+  cafeName?: string;
+}
+
+export function BottomNavigation({ cafeName }: BottomNavigationProps = {}) {
   const pathname = usePathname();
   const { isInstalled, platform } = usePWA();
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
@@ -184,6 +189,8 @@ export function BottomNavigation() {
 
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-primary/20 safe-area-pb">
+      <OrderHeader cafeName={cafeName} />
+      
       <div className="flex items-center justify-around px-2 py-2 relative">
         {navItems.map((item) => {
           const isActive = isActiveRoute(item.href);
@@ -258,7 +265,6 @@ export function BottomNavigation() {
             >
               <div className="mb-1 relative">
                 {item.icon}
-                {item.name === 'Order' && <CartBadge />}
               </div>
               <span className="text-xs font-medium">{item.name}</span>
             </Link>

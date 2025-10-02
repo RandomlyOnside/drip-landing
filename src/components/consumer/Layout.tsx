@@ -9,9 +9,10 @@ import SiteFooter from '@/components/SiteFooter';
 
 interface LayoutProps {
   children: React.ReactNode;
+  cafeName?: string;
 }
 
-export function Layout({ children }: LayoutProps) {
+export function Layout({ children, cafeName }: LayoutProps) {
   return (
     <div className="min-h-screen bg-secondary flex flex-col">
       {/* Desktop Navigation Only */}
@@ -47,7 +48,7 @@ export function Layout({ children }: LayoutProps) {
       </div>
 
       {/* Bottom Navigation - Mobile Only */}
-      <BottomNavigation />
+      <BottomNavigation cafeName={cafeName} />
     </div>
   );
 }

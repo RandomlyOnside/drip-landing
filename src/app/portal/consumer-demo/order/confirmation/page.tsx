@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Layout, QuickActions } from '@/components/consumer';
+import { Layout, QuickActions, StepProgressBar } from '@/components/consumer';
 import { useToast } from '@/lib/toast';
 
 export default function ConfirmationPage() {
@@ -69,7 +69,7 @@ export default function ConfirmationPage() {
   };
 
   return (
-    <Layout>
+    <Layout cafeName={orderData.cafe}>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Section */}
         <div className="mb-6">
@@ -86,29 +86,11 @@ export default function ConfirmationPage() {
 
         {/* Step Progress Bar - Only show for new orders */}
         {!isHistoryView && (
-          <div className="mb-6 bg-white border border-primary/20 rounded-lg p-3">
-            <style jsx>{`
-              @keyframes shimmer {
-                0% { transform: translateX(-100%); }
-                100% { transform: translateX(100%); }
-              }
-            `}</style>
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-primary">Step 4: Order Confirmed</span>
-              <span className="text-xs text-primary/60">100%</span>
-            </div>
-            <div className="w-full bg-primary/10 rounded-full h-2 overflow-hidden">
-              <div 
-                className="h-2 rounded-full relative transition-all duration-700 ease-out"
-                style={{ 
-                  width: `${progressWidth}%`,
-                  background: '#7D9A6D'
-                }}
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent w-full animate-[shimmer_1.5s_ease-in-out_infinite]"></div>
-              </div>
-            </div>
-          </div>
+          <StepProgressBar
+            stepNumber={4}
+            stepTitle="Step 4: Order Confirmed"
+            progress={100}
+          />
         )}
 
         {/* Order Status Card */}
