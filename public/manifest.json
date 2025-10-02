@@ -1,7 +1,7 @@
 {
-  "name": "LocalDrip - Local Coffee Ordering",
+  "name": "LocalDrip - Your local cafes, one tap!",
   "short_name": "LocalDrip",
-  "description": "LocalDrip - Your local coffee ordering app",
+  "description": "LocalDrip - Your local cafes, one tap!",
   "start_url": "/portal/consumer-demo/",
   "scope": "/portal/consumer-demo/",
   "display": "standalone",
@@ -11,31 +11,26 @@
   "prefer_related_applications": false,
   "icons": [
     {
-      "src": "/images/icon-192.png",
+      "src": "/images/ld-192.png",
       "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
+      "type": "image/png"
     },
     {
-      "src": "/images/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "/images/icon-512.png",
+      "src": "/images/ld-512.png",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
+      "type": "image/png"
     },
     {
-      "src": "/images/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
+      "src": "/images/ld-color-drip.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
     }
   ],
-  "categories": ["business", "productivity"],
+  "categories": [
+    "business",
+    "productivity"
+  ],
   "lang": "en-US",
   "dir": "ltr"
 }

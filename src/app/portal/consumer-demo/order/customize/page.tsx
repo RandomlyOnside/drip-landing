@@ -3,13 +3,15 @@
 import { useState, useEffect } from 'react';
 import { Layout, QuickActions, MiniCart, CartBadge } from '@/components/consumer';
 import { useToast } from '@/lib/toast';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useCart, CartItem } from '@/contexts';
+import { ArrowLeft } from 'lucide-react';
 
 export default function CustomizePage() {
   const [progressWidth, setProgressWidth] = useState(0);
   const { cartItems, addToCart, getTotalItems } = useCart();
   const { showSuccess } = useToast();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const itemName = searchParams.get('item') || 'Selected Item';
   const cafeName = searchParams.get('cafe') || 'Selected Cafe';
@@ -58,15 +60,15 @@ export default function CustomizePage() {
 
   const calculateTotalPrice = () => {
     let total = basePrice;
-    
+
     // Size adjustment
     const sizeOption = customizationOptions.sizes.find(s => s.name === selectedSize);
     if (sizeOption) total += sizeOption.price;
-    
+
     // Shots adjustment
     const shotOption = customizationOptions.shots.find(s => s.count === selectedShots);
     if (shotOption) total += shotOption.price;
-    
+
     // Flavors
     flavorDropdowns.forEach(flavor => {
       if (flavor) {
@@ -74,7 +76,7 @@ export default function CustomizePage() {
         if (flavorOption) total += flavorOption.price;
       }
     });
-    
+
     // Add-ins
     addInDropdowns.forEach(addIn => {
       if (addIn) {
@@ -82,7 +84,7 @@ export default function CustomizePage() {
         if (addInOption) total += addInOption.price;
       }
     });
-    
+
     return total;
   };
 
@@ -127,7 +129,11 @@ export default function CustomizePage() {
     };
 
     addToCart(newItem);
-    showSuccess(`Customized ${itemName} added to cart!`);
+    // Visual feedback provided by CartBadge update
+  };
+
+  const handleBackToMenu = () => {
+    router.back();
   };
 
   const handleCheckout = () => {
@@ -152,10 +158,6 @@ export default function CustomizePage() {
         <div className="mb-6 bg-white border border-primary/20 rounded-lg p-3 flex items-center justify-between">
           <div className="flex-1">
             <style jsx>{`
-              @keyframes colorTransition {
-                0%, 100% { background: #D35400; }
-                50% { background: #7D9A6D; }
-              }
               @keyframes shimmer {
                 0% { transform: translateX(-100%); }
                 100% { transform: translateX(100%); }
@@ -166,23 +168,21 @@ export default function CustomizePage() {
               <span className="text-xs text-primary/60">60%</span>
             </div>
             <div className="w-full bg-primary/10 rounded-full h-2 overflow-hidden">
-              <div 
+              <div
                 className="h-2 rounded-full relative transition-all duration-700 ease-out"
-                style={{ 
+                style={{
                   width: `${progressWidth}%`,
-                  background: '#D35400',
-                  animation: progressWidth > 0 ? 'colorTransition 3s ease-in-out 0.5s infinite' : 'none'
+                  background: '#7D9A6D'
                 }}
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse"></div>
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent w-full animate-[shimmer_2s_ease-in-out_infinite]"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent w-full animate-[shimmer_1.5s_ease-in-out_infinite]"></div>
               </div>
             </div>
           </div>
 
           {/* Cart Icon */}
           <div className="ml-4 relative">
-            <button 
+            <button
               onClick={() => window.location.href = '/portal/consumer-demo/order/cart'}
               className="p-2 hover:bg-primary/5 rounded-lg transition-colors"
             >
@@ -322,7 +322,7 @@ export default function CustomizePage() {
             <h3 className="text-lg font-semibold text-primary">{itemName}</h3>
             <div className="text-xl font-bold text-primary">${calculateTotalPrice().toFixed(2)}</div>
           </div>
-          
+
           {/* Customization details */}
           <div className="flex items-center justify-between">
             <p className="text-sm text-primary/70 flex-1">
@@ -330,19 +330,31 @@ export default function CustomizePage() {
               {flavorDropdowns.filter(f => f).length > 0 && ` • ${flavorDropdowns.filter(f => f).join(', ')}`}
               {addInDropdowns.filter(a => a).length > 0 && ` • ${addInDropdowns.filter(a => a).join(', ')}`}
             </p>
-            
-            {/* Compact Add to Cart button */}
-            <button
-              onClick={handleAddToCart}
-              className="ml-4 px-4 py-2 bg-accent1 text-white rounded-lg hover:bg-accent1/90 transition-colors font-medium text-sm"
-            >
-              Add to Cart
-            </button>
+
+            {/* Action buttons */}
+            <div className="flex items-center gap-2 ml-4">
+              {/* Back to Menu button */}
+              <button
+                onClick={handleBackToMenu}
+                className="p-2 text-primary hover:bg-gray-100 rounded-lg transition-colors"
+                title="Back to Menu"
+              >
+                <ArrowLeft size={20} />
+              </button>
+
+              {/* Add to Cart button */}
+              <button
+                onClick={handleAddToCart}
+                className="px-4 py-2 bg-accent1 text-white rounded-lg hover:bg-accent1/90 transition-colors font-medium text-sm"
+              >
+                Add to Cart
+              </button>
+            </div>
           </div>
         </div>
 
         {/* Mini Cart */}
-        <MiniCart 
+        <MiniCart
           items={cartItems}
           onCheckout={handleCheckout}
           className="mt-6"

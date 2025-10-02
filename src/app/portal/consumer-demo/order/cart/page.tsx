@@ -21,7 +21,7 @@ export default function CartPage() {
   const handleUpdateQuantity = (id: string, newQuantity: number) => {
     if (newQuantity === 0) {
       removeFromCart(id);
-      showInfo('Item removed from cart');
+      // Visual feedback: item disappears from cart
     } else {
       updateQuantity(id, newQuantity);
     }
@@ -29,7 +29,7 @@ export default function CartPage() {
 
   const handleRemoveItem = (id: string) => {
     removeFromCart(id);
-    showInfo('Item removed from cart');
+    // Visual feedback: item disappears from cart
   };
 
   const calculateSubtotal = () => {
@@ -65,10 +65,6 @@ export default function CartPage() {
         {/* Step Progress Bar */}
         <div className="mb-6 bg-white border border-primary/20 rounded-lg p-3">
           <style jsx>{`
-            @keyframes colorTransition {
-              0%, 100% { background: #D35400; }
-              50% { background: #7D9A6D; }
-            }
             @keyframes shimmer {
               0% { transform: translateX(-100%); }
               100% { transform: translateX(100%); }
@@ -83,12 +79,10 @@ export default function CartPage() {
               className="h-2 rounded-full relative transition-all duration-700 ease-out"
               style={{ 
                 width: `${progressWidth}%`,
-                background: '#D35400',
-                animation: progressWidth > 0 ? 'colorTransition 3s ease-in-out 0.5s infinite' : 'none'
+                background: '#7D9A6D'
               }}
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse"></div>
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent w-full animate-[shimmer_2s_ease-in-out_infinite]"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent w-full animate-[shimmer_1.5s_ease-in-out_infinite]"></div>
             </div>
           </div>
         </div>
