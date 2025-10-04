@@ -72,6 +72,21 @@ module.exports = {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
+  		},
+  		animation: {
+  			'slide-up': 'slideUp 0.3s ease-out forwards',
+  		},
+  		keyframes: {
+  			slideUp: {
+  				'0%': { 
+  					opacity: '0', 
+  					transform: 'translateY(10px) translateX(-50%)' 
+  				},
+  				'100%': { 
+  					opacity: '1', 
+  					transform: 'translateY(0) translateX(-50%)' 
+  				},
+  			},
   		}
   	}
   },

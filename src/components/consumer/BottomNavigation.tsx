@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { usePWA } from '@/hooks/usePWA';
 import { OrderHeader } from './OrderHeader';
-import { CartBadge } from './index';
+import CartBadge from './CartBadge';
 
 interface BottomNavItem {
   name: string;

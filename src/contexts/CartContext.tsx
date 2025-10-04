@@ -8,6 +8,7 @@ export interface CartItem {
   price: number;
   quantity: number;
   customizations?: string;
+  cafeName?: string;
 }
 
 interface CartContextType {
@@ -32,7 +33,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     if (savedCart) {
       try {
         const parsedCart = JSON.parse(savedCart);
-        setCartItems(parsedCart);
+        // Add default cafe name to existing items that don't have one
+        const migratedCart = parsedCart.map((item: CartItem) => ({
+          ...item,
+          cafeName: item.cafeName || 'Local Drip Coffee'
+        }));
+        setCartItems(migratedCart);
       } catch (error) {
         console.error('Error loading cart from localStorage:', error);
       }

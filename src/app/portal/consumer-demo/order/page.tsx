@@ -1,14 +1,29 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Layout, QuickActions, CartBadge, StepProgressBar } from '@/components/consumer';
 import { MockDataService } from '@/lib/mockDataService';
 import { useToast } from '@/lib/toast';
+import { useCart } from '@/contexts';
 
 export default function OrderPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [progressWidth, setProgressWidth] = useState(0);
   const { showSuccess, showInfo } = useToast();
+  const { cartItems, getTotalItems } = useCart();
+  const router = useRouter();
+
+  // Check if user has items in cart and redirect to menu
+  useEffect(() => {
+    if (getTotalItems() > 0 && cartItems.length > 0) {
+      const cafeName = cartItems[0].cafeName;
+      if (cafeName) {
+        router.push(`/portal/consumer-demo/order/menu?cafe=${encodeURIComponent(cafeName)}`);
+        return;
+      }
+    }
+  }, [cartItems, getTotalItems, router]);
 
   // Animate progress bar on page load
   useEffect(() => {

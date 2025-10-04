@@ -125,7 +125,8 @@ export default function CustomizePage() {
       name: itemName,
       price: calculateTotalPrice(),
       quantity: 1,
-      customizations
+      customizations,
+      cafeName
     };
 
     addToCart(newItem);

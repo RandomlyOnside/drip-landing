@@ -141,54 +141,73 @@ export default function CartPage() {
           </div>
         )}
 
-        {/* Order Summary - Only show when there are items */}
+        {/* You May Also Like Section - Only show when there are items */}
         {cartItems.length > 0 && (
-          <div className="bg-white border-2 border-accent2 rounded-lg p-4 mb-6">
-            <h3 className="text-lg font-semibold text-primary mb-4">Order Summary</h3>
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold text-primary mb-4">You may also like</h3>
             
-            <div className="space-y-2 mb-4">
-              <div className="flex justify-between">
-                <span className="text-primary/70">Subtotal</span>
-                <span className="text-primary">${calculateSubtotal().toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-primary/70">Tax</span>
-                <span className="text-primary">${calculateTax().toFixed(2)}</span>
-              </div>
-              <div className="border-t border-primary/10 pt-2 mb-2">
-                <div className="flex justify-between">
-                  <span className="text-lg font-semibold text-primary">Total</span>
-                  <span className="text-lg font-bold text-primary">${calculateTotal().toFixed(2)}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Payment Method */}
-            <div className="mb-4 p-3 bg-primary/5 rounded-lg border border-primary/10">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-white rounded border border-primary/20 flex items-center justify-center">
-                    <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                    </svg>
+            {/* Horizontal scrollable menu items */}
+            <div className="flex gap-3 overflow-x-auto pb-2">
+              {[
+                { id: 1, name: 'Caramel Macchiato', price: 5.25 },
+                { id: 2, name: 'Blueberry Muffin', price: 3.50 },
+                { id: 3, name: 'Iced Americano', price: 4.00 },
+                { id: 4, name: 'Chocolate Croissant', price: 4.25 },
+                { id: 5, name: 'Green Tea Latte', price: 4.75 },
+                { id: 6, name: 'Banana Bread', price: 3.75 }
+              ].map((item) => (
+                <div
+                  key={item.id}
+                  className="flex-shrink-0 w-32 h-32 bg-white border border-primary/20 rounded-lg overflow-hidden hover:shadow-md hover:border-accent1/40 transition-all cursor-pointer relative"
+                  onClick={() => window.location.href = `/portal/consumer-demo/order/customize?item=${encodeURIComponent(item.name)}&cafe=${encodeURIComponent('Local Drip Coffee')}&price=${item.price}`}
+                >
+                  {/* Square placeholder image background */}
+                  <div className="w-full h-full bg-gradient-to-br from-primary/10 to-accent2/20">
                   </div>
-                  <div>
-                    <p className="text-sm font-medium text-primary">•••• •••• •••• 4242</p>
-                    <p className="text-xs text-primary/60">Visa ending in 4242</p>
+                  
+                  {/* Title overlay as square tag */}
+                  <div className="absolute top-2 left-2">
+                    <div className="bg-accent1 text-white px-1.5 py-0.5 rounded text-xs font-medium shadow-sm" style={{ fontSize: '10px' }}>
+                      {item.name}
+                    </div>
+                  </div>
+                  
+                  {/* Price pill in bottom right */}
+                  <div className="absolute bottom-2 right-2">
+                    <div className="bg-transparent text-accent2 px-1.5 py-0.5 rounded text-xs font-bold" style={{ fontSize: '10px' }}>
+                      ${item.price}
+                    </div>
                   </div>
                 </div>
-                <button className="text-xs text-accent1 hover:text-accent1/80 font-medium">
-                  Change
-                </button>
-              </div>
+              ))}
             </div>
+          </div>
+        )}
 
-            <button
-              onClick={handleCheckout}
-              className="w-full py-3 bg-accent1 text-white rounded-lg hover:bg-accent1/90 transition-colors font-medium text-lg"
-            >
-              Confirm Order
-            </button>
+        {/* Compact Order Summary - Only show when there are items */}
+        {cartItems.length > 0 && (
+          <div className="bg-white border border-primary/20 rounded-lg p-3 mb-6">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm text-primary/70">Subtotal</span>
+              <span className="text-sm text-primary">${calculateSubtotal().toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm text-primary/70">Tax</span>
+              <span className="text-sm text-primary">${calculateTax().toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between items-center mb-2 pt-1 border-t border-primary/10">
+              <span className="text-sm font-semibold text-primary">Total</span>
+              <span className="text-sm font-bold text-primary">${calculateTotal().toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-xs text-primary/60">•••• 4242</span>
+              <button
+                onClick={handleCheckout}
+                className="px-4 py-1.5 bg-accent1 text-white rounded text-sm hover:bg-accent1/90 transition-colors font-medium"
+              >
+                Checkout
+              </button>
+            </div>
           </div>
         )}
       </div>
